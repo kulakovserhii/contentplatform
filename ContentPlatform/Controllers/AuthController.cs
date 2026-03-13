@@ -52,5 +52,10 @@ namespace ContentPlatform.Controllers
         {
             return "Admin-Authorize";
         }
+        [HttpGet("/deploy-test")]
+        public async Task<string> TTTEEESSSTTT()
+        {
+            return "It works!";
+        }
     }
 }
