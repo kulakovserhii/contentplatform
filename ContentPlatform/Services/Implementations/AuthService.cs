@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ContentPlatform.Services.Implementations
 {
@@ -36,11 +37,14 @@ namespace ContentPlatform.Services.Implementations
             return true;
         }
 
-        public async Task<bool?> RegisterAsync(RegisterDto registerDto)
+        public async Task<string?> RegisterAsync(RegisterDto registerDto)
         {
             var userExists = await authRepository.GetUserByEmailAsync(registerDto.Email);
             if (userExists != null)
-                return false;
+                return "User already has an account";
+            var validationError = RegisterValidation(registerDto.Email, registerDto.Password);
+            if (validationError != null)
+                return validationError;
             var passwordHasher = new PasswordHasher<object>();
             var hashPassword = passwordHasher.HashPassword(null!, registerDto.Password);
             var user = new User
@@ -52,7 +56,7 @@ namespace ContentPlatform.Services.Implementations
                 Age = registerDto.Age
             };
             await authRepository.CreateUserAsync(user);
-            return true;
+            return "Account created";
         }
         private async Task<string> CreateJwtToken(User user)
         {
@@ -120,6 +124,18 @@ namespace ContentPlatform.Services.Implementations
                 JwtToken = await CreateJwtToken(userExists),
                 RefreshToken = await SaveRefreshToken(userExists),
             };
+        }
+        private string RegisterValidation(string email, string password)
+        {
+            string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            string passwordPattern = @"^(?=.*[A-Za-z])(?=.*\d).{8,}$";
+            bool isEmailValid = Regex.IsMatch(email, emailPattern);
+            bool isPasswordValid = Regex.IsMatch(password, passwordPattern);
+            if (!Regex.IsMatch(email, emailPattern))
+                return "Invalid email format";
+            if (!Regex.IsMatch(password, passwordPattern))
+                return "Password must be at least 8 characters and contain letters and numbers";
+            return null;
         }
     }
 }

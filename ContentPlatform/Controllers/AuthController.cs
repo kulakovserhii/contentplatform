@@ -14,11 +14,11 @@ namespace ContentPlatform.Controllers
         public async Task<IActionResult> RegisterAsync(RegisterDto registerDto)
         {
             var result = await authService.RegisterAsync(registerDto);
-            if(result == false)
+            if(result != "Account created")
             {
-                return BadRequest(new { message = "You are registered already" });
+                return BadRequest(new { message = result });
             }
-            return Ok(result);
+            return Ok(new { message = result});
         }
         [HttpPost("/login")]
         public async Task<IActionResult> LoginAsync(LoginDto loginDto)
@@ -42,20 +42,15 @@ namespace ContentPlatform.Controllers
         }
         [HttpGet("/default-test")]
         [Authorize]
-        public async Task<string> DefaultTest()
+        public async Task<IActionResult> DefaultTest()
         {
-            return "Authorize";
+            return Ok(new { message = "Authorize" });
         }
         [HttpGet("/admin-test")]
         [Authorize(Roles = "Admin")]
-        public async Task<string> AdminTest()
+        public async Task<IActionResult> AdminTest()
         {
-            return "Admin-Authorize";
-        }
-        [HttpGet("/deploy-test")]
-        public async Task<string> TTTEEESSSTTT()
-        {
-            return "It works!";
+            return Ok(new { message = "Admin-Authorize" });
         }
     }
 }
