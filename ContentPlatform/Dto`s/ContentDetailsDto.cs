@@ -1,16 +1,17 @@
-﻿namespace ContentPlatform.Models
+﻿namespace ContentPlatform.Dto_s
 {
-    public abstract class Content
+    public class ContentDetailsDto
     {
         public int Id { get; set; }
-        public required string Title { get; set; } 
+        public required string Title { get; set; }
         public required string Description { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public int ReleaseYear { get; set; }
         public double AverageRating { get; set; }
         public int NumberOfRatings { get; set; }
         public string? ImageUrl { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public List<Review> Reviews { get; set; } = new List<Review>();
+        public DateTime CreatedAt { get; set; }
+        public List<ReviewDto>? Reviews { get; set; }
+        public object? AdditionalDetails { get; set; }
     }
 }
