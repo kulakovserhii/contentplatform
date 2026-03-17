@@ -15,19 +15,16 @@ namespace ContentPlatform.Data.Repositories.Implementations
             return content;
         }
 
-        public async Task<bool> DeleteContent<T>(int contentId) where T : Content
+        public async Task<bool> DeleteContent<T>(Content content) where T : Content
         {
-            var content = await appDbContext.Set<T>().FindAsync(contentId);
-            if (content == null)
-                return false;
-            appDbContext.Set<T>().Remove(content);
+            appDbContext.Contents.Remove(content);
             await appDbContext.SaveChangesAsync();
             return true;
         }
 
-        public async Task<List<T>> GetAllContentAsync<T>() where T : Content
+        public async Task<List<Content>> GetAllContentAsync()
         {
-            var contents = await appDbContext.Set<T>().ToListAsync();
+            var contents = await appDbContext.Contents.AsNoTracking().ToListAsync();
             return contents;
         }
 

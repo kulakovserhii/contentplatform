@@ -28,5 +28,41 @@ namespace ContentPlatform.Controllers
                 return NotFound(new { message = "Content not found" });
             return Ok(content);
         }
+        [HttpGet("get-all-content")]
+        public async Task<IActionResult> GetAllContent()
+        {
+            var content = await contentService.GetAllContentWithoutReviewsAsync();
+            if (content == null || content.Count == 0)
+                return NotFound(new {message = "No content were found"});
+            return Ok(content);
+        }
+        [HttpDelete("delete-content")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteContent([FromQuery] int contentId)
+        {
+            var result = await contentService.DeleteContentAsync(contentId);
+            if (result == string.Empty)
+                return NotFound(new { message = "Content with this id does not exist" });
+            if(result == "Content deletion failed")
+                return BadRequest(new { message = result });
+            return Ok(new { message = result });
+        }
+        [HttpPut("update-content")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateContent([FromQuery] int contentId, [FromForm] UpdateContentDto dto)
+        {
+            try
+            {
+                var update = await contentService.UpdateContentAsync(contentId, dto);
+                if (update == null)
+                    return BadRequest(new { message = "Content update failed" });
+                return Ok(update);
+            }
+           
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

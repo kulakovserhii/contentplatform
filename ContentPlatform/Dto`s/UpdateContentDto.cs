@@ -1,19 +1,15 @@
 ﻿using ContentPlatform.Enums;
-using ContentPlatform.Models;
 
 namespace ContentPlatform.Dto_s
 {
-    public class UniversalContentDto
+    public class UpdateContentDto
     {
         public ContentType ContentType { get; set; }
-        public required string Title { get; set; }
-        public required string Description { get; set; }
-        public DateOnly ReleaseDate { get; set; }
-        public int ReleaseYear { get; set; }
-        public double AverageRating { get; set; }
-        public int NumberOfRatings { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public DateOnly? ReleaseDate { get; set; }
+        public int? ReleaseYear { get; set; }
         public string? ImageUrl { get; set; }
-        public DateTime CreatedAt { get; set; }
         public string? FilmDirector { get; set; }
         public string? FilmWriters { get; set; }
         public string? FilmMainCast { get; set; }
@@ -30,14 +26,14 @@ namespace ContentPlatform.Dto_s
         public int? EpisodeRuntimeInMinutes { get; set; }
         public string? GameDeveloper { get; set; }
         public string? GamePublisher { get; set; }
-        public List<Platform>? GamePlatforms { get; set; } = new List<Platform>();
-        public List<GameGenre>? GameGenres { get; set; } = new List<GameGenre>();
+        public List<Platform>? GamePlatforms { get; set; }
+        public List<GameGenre>? GameGenres { get; set; } 
         public string? MusicArtist { get; set; }
         public string? MusicAlbum { get; set; }
         public int? MusicDurationInSeconds { get; set; }
         public string? MusicLabel { get; set; }
-        public string? MusicLanquage { get; set; }
-        public List<MusicGenre>? MusciGenres { get; set; } = new List<MusicGenre>();
+        public string? MusicLanguage { get; set; }
+        public List<MusicGenre>? MusicGenres { get; set; }
         public string? TVShowCreators { get; set; }
         public string? TVShowDirector { get; set; }
         public string? TVShowMainCast { get; set; }
@@ -45,12 +41,11 @@ namespace ContentPlatform.Dto_s
         public int? TVShowTotalEpisodes { get; set; }
         public string? TVShowNetworks { get; set; }
         public DateTime? TVShowEndDate { get; set; }
-        public List<FilmGenre>? TVShowGenres { get; set; } = new List<FilmGenre>();
-        public required string BookAuthor { get; set; }
-        public string BookPublisher { get; set; }
-        public required string BookOriginalLanguage { get; set; }
-        public int BookPages { get; set; }
-        public List<BookGenre> BookGenres { get; set; } = new List<BookGenre>();
+        public List<FilmGenre>? TVShowGenres { get; set; }
+        public string? BookAuthor { get; set; }
+        public string? BookPublisher { get; set; }
+        public string? BookOriginalLanguage { get; set; }
+        public int? BookPages { get; set; }
+        public List<BookGenre>? BookGenres { get; set; }
     }
 }
-
