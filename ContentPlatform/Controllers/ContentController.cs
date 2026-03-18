@@ -64,5 +64,13 @@ namespace ContentPlatform.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpGet("search-content")]
+        public async Task<IActionResult> SearchContent([FromQuery] ContentSearch contentSearch)
+        {
+            var result = await contentService.SearchContentAsync(contentSearch);
+            if (result == null)
+                return NotFound(new { message = "No content was found with this parameters" });
+            return Ok(result);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ContentPlatform.Models;
+﻿using ContentPlatform.Dto_s;
+using ContentPlatform.Models;
 
 namespace ContentPlatform.Data.Repositories.Interfaces
 {
@@ -10,5 +11,6 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task<T> UpdateContentAsync<T>(T content) where T : Content;
         Task<bool> DeleteContent<T>(Content content) where T : Content;
         Task<Content?> GetContentWithReviewAsync(int contentId);
+        Task<List<Content>> SearchContentAsync(ContentSearch searchParams);
     }
 }
