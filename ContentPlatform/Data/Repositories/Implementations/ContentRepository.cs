@@ -116,7 +116,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
         {
             var query = appDbContext.Filmes.Include(f => f.Reviews).AsNoTracking().AsQueryable();
             query = ApplyBaseFilters(query, contentSearch);
-            if(contentSearch.FilmGenres != null && contentSearch.FilmGenres.Count > 0 || contentSearch.FilmGenres.Any())
+            if(contentSearch.FilmGenres != null && contentSearch.FilmGenres.Any())
             {
                 query = query.Where(f => f.Genres.Any(g => contentSearch.FilmGenres.Contains(g)));
             }
@@ -126,7 +126,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
         {
             var query = appDbContext.TVShows.Include(ts => ts.Reviews).AsNoTracking().AsQueryable();
             query = ApplyBaseFilters(query, contentSearch);
-            if(contentSearch.TVShowGenres != null && contentSearch.TVShowGenres.Count > 0 && contentSearch.TVShowGenres.Any())
+            if(contentSearch.TVShowGenres != null && contentSearch.TVShowGenres.Any())
             {
                 query = query.Where(ts => ts.Genres.Any(g => contentSearch.TVShowGenres.Contains(g)));
             }
@@ -141,7 +141,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
                 query = query.Where(m => m.Artist.ToLower().Contains(contentSearch.ContentName.ToLower()) ||
                     m.Album.ToLower().Contains(contentSearch.ContentName.ToLower()));
             }
-            if (contentSearch.MusicGenres != null && contentSearch.MusicGenres.Count > 0 && contentSearch.MusicGenres.Any())
+            if (contentSearch.MusicGenres != null && contentSearch.MusicGenres.Any())
             {
                 query = query.Where(m => m.Genres.Any(g => contentSearch.MusicGenres.Contains(g)));
             }
@@ -155,7 +155,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
             {
                 query = query.Where(g => g.Developer.ToLower().Contains(contentSearch.ContentName.ToLower()));
             }
-            if(contentSearch.GameGenres != null && contentSearch.GameGenres.Count > 0 && contentSearch.GameGenres.Any())
+            if(contentSearch.GameGenres != null && contentSearch.GameGenres.Any())
             {
                 query = query.Where(g => g.Genres.Any(g => contentSearch.GameGenres.Contains(g)));
             }
@@ -165,7 +165,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
         {
             var query = appDbContext.Books.Include(b => b.Reviews).AsNoTracking().AsQueryable();
             query = ApplyBaseFilters(query, contentSearch);
-            if(contentSearch.BookGenres != null && contentSearch.BookGenres.Count > 0 && contentSearch.BookGenres.Any())
+            if(contentSearch.BookGenres != null && contentSearch.BookGenres.Any())
             {
                 query = query.Where(b => b.Genres.Any(g => contentSearch.BookGenres.Contains(g)));
             }
@@ -175,7 +175,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
         {
             var query = appDbContext.Episodes.Include(e => e.Reviews).Include(e => e.TVShow).AsNoTracking().AsQueryable();
             query = ApplyBaseFilters(query, contentSearch);
-            if(contentSearch.TVShowGenres != null && contentSearch.TVShowGenres.Count > 0 && contentSearch.TVShowGenres.Any())
+            if(contentSearch.TVShowGenres != null && contentSearch.TVShowGenres.Any())
             {
                 var tvShowIds = await appDbContext.TVShows.Where(t => t.Genres.Any(g => contentSearch.TVShowGenres.Contains(g))).Select(t => t.Id).ToListAsync();
                 query = query.Where(e => tvShowIds.Contains(e.TVShowId));
