@@ -23,6 +23,7 @@ namespace ContentPlatform.Data
         public DbSet<TVShow> TVShows { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<RateReview> RateReviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ContentConfiguration());
@@ -33,6 +34,7 @@ namespace ContentPlatform.Data
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new TVShowConfiguration());
             modelBuilder.ApplyConfiguration(new EpisodeConfiguration());
+            modelBuilder.ApplyConfiguration(new RateReviewConfiguration());
             modelBuilder.Entity<Film>().ToTable("Films");
             modelBuilder.Entity<TVShow>().ToTable("TVShows");
             modelBuilder.Entity<Episode>().ToTable("Episodes");

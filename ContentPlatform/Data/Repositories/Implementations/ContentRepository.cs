@@ -41,7 +41,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
 
         public async Task<Content?> GetContentWithReviewAsync(int contentId)
         {
-            var content = await appDbContext.Contents.Include(c => c.Reviews)
+            var content = await appDbContext.Contents.Include(c => c.Reviews).ThenInclude(r => r.RateReviews)
                 .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(c => c.Id == contentId);
             return content;
@@ -188,6 +188,24 @@ namespace ContentPlatform.Data.Repositories.Implementations
             appDbContext.Set<T>().Update(content);
             await appDbContext.SaveChangesAsync();
             return content;
+        }
+
+        public async Task UpdateContentRating(int contentId)
+        {
+            var content = await appDbContext.Contents.Include(c => c.Reviews).FirstOrDefaultAsync(c => c.Id == contentId);
+            if (content == null) 
+                return;
+            if (content.Reviews.Any())
+            {
+                content.AverageRating = content.Reviews.Average(r => r.Rating);
+                content.NumberOfRatings = content.Reviews.Count();
+            }
+            else
+            {
+                content.AverageRating = 0;
+                content.NumberOfRatings = 0;
+            }
+            await appDbContext.SaveChangesAsync();
         }
     }
 }

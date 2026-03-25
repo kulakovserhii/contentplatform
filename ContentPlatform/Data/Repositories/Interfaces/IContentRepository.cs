@@ -12,5 +12,6 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task<bool> DeleteContent<T>(Content content) where T : Content;
         Task<Content?> GetContentWithReviewAsync(int contentId);
         Task<List<Content>> SearchContentAsync(ContentSearch searchParams);
+        Task UpdateContentRating(int contentId);
     }
 }

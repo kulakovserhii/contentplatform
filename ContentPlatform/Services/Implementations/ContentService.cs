@@ -402,7 +402,6 @@ namespace ContentPlatform.Services.Implementations
             if(dto.BookGenres.Count > 0)
                 book.Genres = dto.BookGenres;
         }
-
         public async Task<List<ContentDetailsDto>> SearchContentAsync(ContentSearch contentSearch)
         {
             var contents = await contentRepository.SearchContentAsync(contentSearch);

@@ -4,6 +4,7 @@ using ContentPlatform.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ContentPlatform.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260325142942_EvaluationReview")]
+    partial class EvaluationReview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,33 +66,6 @@ namespace ContentPlatform.Migrations
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("ContentPlatform.Models.RateReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ReviewId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VoteType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReviewId");
-
-                    b.HasIndex("UserId", "ReviewId")
-                        .IsUnique();
-
-                    b.ToTable("RateReviews");
-                });
-
             modelBuilder.Entity("ContentPlatform.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -132,6 +108,12 @@ namespace ContentPlatform.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DislikeCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -410,25 +392,6 @@ namespace ContentPlatform.Migrations
                     b.ToTable("TVShows", (string)null);
                 });
 
-            modelBuilder.Entity("ContentPlatform.Models.RateReview", b =>
-                {
-                    b.HasOne("ContentPlatform.Models.Review", "Review")
-                        .WithMany("RateReviews")
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ContentPlatform.Models.User", "User")
-                        .WithMany("RateReviews")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Review");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ContentPlatform.Models.RefreshToken", b =>
                 {
                     b.HasOne("ContentPlatform.Models.User", "User")
@@ -545,11 +508,6 @@ namespace ContentPlatform.Migrations
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("ContentPlatform.Models.Review", b =>
-                {
-                    b.Navigation("RateReviews");
-                });
-
             modelBuilder.Entity("ContentPlatform.Models.Role", b =>
                 {
                     b.Navigation("UserRoles");
@@ -557,8 +515,6 @@ namespace ContentPlatform.Migrations
 
             modelBuilder.Entity("ContentPlatform.Models.User", b =>
                 {
-                    b.Navigation("RateReviews");
-
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("Reviews");

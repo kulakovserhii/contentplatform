@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ContentPlatform.Dto_s;
 using ContentPlatform.Models;
+using ContentPlatform.Enums;
 
 public class MapperProfile : Profile
 {
@@ -12,9 +13,13 @@ public class MapperProfile : Profile
             .ForMember(dest => dest.AdditionalDetails, opt => opt.
             MapFrom(src => GetAdditionalDetails(src)));
         CreateMap<Review, ReviewDto>()
-            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+            .ForMember(dest => dest.LikeCount, opt => opt.MapFrom(src => src.RateReviews
+                .Count(rr => rr.VoteType == Evaluate.Like)))
+            .ForMember(dest => dest.DislikeCount, opt => opt.MapFrom(src => src.RateReviews
+                .Count(rr => rr.VoteType == Evaluate.Dislike)));
+        
         CreateMap<User, UserDto>();
-
     }
     private object? GetAdditionalDetails(Content src)
     {

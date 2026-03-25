@@ -14,5 +14,6 @@ namespace ContentPlatform.Models
         public User User { get; set; }
         public int ContentId { get; set; }
         public Content Content { get; set; }
+        public List<RateReview> RateReviews { get; set; } = new List<RateReview>();
     }
 }

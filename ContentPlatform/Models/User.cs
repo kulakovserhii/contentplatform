@@ -11,5 +11,6 @@
         public List<Review> Reviews { get; set; } = new List<Review>();
         public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+        public List<RateReview> RateReviews { get; set; } = new List<RateReview>();
     }
 }
