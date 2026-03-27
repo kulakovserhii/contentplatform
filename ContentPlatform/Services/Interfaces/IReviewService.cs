@@ -7,5 +7,7 @@ namespace ContentPlatform.Services.Interfaces
     {
         Task<string> LeaveReviewAsync(CreateReviewDto createReviewDto, int contentId, int userId);
         Task<string> EvaluateReviewAsync(int reviewId, int userId, Evaluate evaluate);
+        Task<List<MyReviewDto>> GetUserReviewsAsync(int userId);
+        Task<List<ReviewDto>> GetContentReviews(int contentId, GetReviewsDto getReviewsDto);
     }
 }

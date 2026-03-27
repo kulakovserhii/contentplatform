@@ -8,5 +8,7 @@ namespace ContentPlatform.Services.Interfaces
         Task<TokensDto?> LoginAsync(LoginDto loginDto);
         Task<string?> RegisterAsync(RegisterDto registerDto);
         Task<bool> LogoutAsync(string refreshToken);
+        Task<User?> GetOrCreateUserAsync(string email, string? name, string? lastname);
+        Task<TokensDto> GetTokensAsync(User user);
     }
 }

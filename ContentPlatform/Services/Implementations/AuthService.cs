@@ -58,6 +58,24 @@ namespace ContentPlatform.Services.Implementations
             await authRepository.CreateUserAsync(user);
             return "Account created";
         }
+        public async Task<User?> GetOrCreateUserAsync(string email, string? name, string? lastname)
+        {
+            var userExists = await authRepository.GetUserByEmailAsync(email);
+            if (userExists != null)
+                return userExists;
+            var passwordHasher = new PasswordHasher<object>();
+            var hashPassword = passwordHasher.HashPassword(null!, Guid.NewGuid().ToString());
+            var user = new User
+            {
+                Email = email,
+                Password = hashPassword,
+                FirstName = name ?? email.Split('@')[0],
+                LastName = lastname ?? email.Split('@')[0],
+                Age = null
+            };
+            await authRepository.CreateUserAsync(user);
+            return user;
+        }
         private async Task<string> CreateJwtToken(User user)
         {
             var userRoles = await authRepository.GetUserRolesAsync(user.Id);
@@ -136,6 +154,16 @@ namespace ContentPlatform.Services.Implementations
             if (!Regex.IsMatch(password, passwordPattern))
                 return "Password must be at least 8 characters and contain letters and numbers";
             return null;
+        }
+
+
+        public async Task<TokensDto> GetTokensAsync(User user)
+        {
+            return new TokensDto
+            {
+                JwtToken = await CreateJwtToken(user),
+                RefreshToken = await SaveRefreshToken(user),
+            };
         }
     }
 }

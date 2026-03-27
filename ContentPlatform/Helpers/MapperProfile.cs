@@ -20,6 +20,10 @@ public class MapperProfile : Profile
                 .Count(rr => rr.VoteType == Evaluate.Dislike)));
         
         CreateMap<User, UserDto>();
+        CreateMap<Content, ContentSmallInfo>();
+        CreateMap<Review, MyReviewDto>()
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content));
+        CreateMap<Content, MyReviewContentDto>();
     }
     private object? GetAdditionalDetails(Content src)
     {

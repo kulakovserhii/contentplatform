@@ -4,6 +4,7 @@ using ContentPlatform.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 
 namespace ContentPlatform.Controllers
 {
@@ -70,6 +71,14 @@ namespace ContentPlatform.Controllers
             var result = await contentService.SearchContentAsync(contentSearch);
             if (result == null)
                 return NotFound(new { message = "No content was found with this parameters" });
+            return Ok(result);
+        }
+        [HttpGet("get-content-small-info")]
+        public async Task<IActionResult> GetContentSmallInfo()
+        {
+            var result = await contentService.GetContentsSmallInfo();
+            if (result == null)
+                return NotFound(new { message = "No content was found"});
             return Ok(result);
         }
     }

@@ -3,6 +3,7 @@ using ContentPlatform.Data.Repositories.Implementations;
 using ContentPlatform.Data.Repositories.Interfaces;
 using ContentPlatform.Services.Implementations;
 using ContentPlatform.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,7 +16,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+var google = builder.Configuration.GetSection("GoogleAuth");
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -27,6 +35,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
     };
+}).AddCookie()
+    .AddGoogle(options =>
+{
+    options.ClientId = google["ClientId"]!;
+    options.ClientSecret = google["ClientSecret"]!;
+    options.CallbackPath = "/signin-google";
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -41,6 +55,9 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MapperProfile>();
 });
+
+
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

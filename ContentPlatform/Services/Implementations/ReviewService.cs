@@ -40,6 +40,32 @@ namespace ContentPlatform.Services.Implementations
             }
         }
 
+        public async Task<List<ReviewDto>> GetContentReviews(int contentId, GetReviewsDto getReviewsDto)
+        {
+            var reviews = await reviewRepository.GetContentReviews(contentId, getReviewsDto);
+            if (reviews == new List<Review>())
+                return null;
+            var result = new List<ReviewDto>();
+            foreach(var review in reviews)
+            {
+                result.Add(mapper.Map<ReviewDto>(review));
+            }
+            return result;
+        }
+
+        public async Task<List<MyReviewDto>> GetUserReviewsAsync(int userId)
+        {
+            var userreviews = await reviewRepository.GetUserReviews(userId);
+            if (userreviews == null)
+                return new List<MyReviewDto>();
+            var result = new List<MyReviewDto>();
+            foreach(var userreview in userreviews)
+            {
+                result.Add(mapper.Map<MyReviewDto>(userreview));
+            }
+            return result;
+        }
+
         public async Task<string> LeaveReviewAsync(CreateReviewDto createReviewDto, int contentId, int userId)
         {
             var contentExists = await contentRepository.GetContentByIdAsync<Content>(contentId);

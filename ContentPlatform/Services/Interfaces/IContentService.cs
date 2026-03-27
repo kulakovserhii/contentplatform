@@ -13,5 +13,6 @@ namespace ContentPlatform.Services.Interfaces
         Task<string> DeleteContentAsync(int contentId);
         Task<ContentDetailsDto> UpdateContentAsync(int contentId, UpdateContentDto dto);
         Task<List<ContentDetailsDto>> SearchContentAsync(ContentSearch contentSearch);
+        Task<List<ContentSmallInfo>> GetContentsSmallInfo();
     }
 }

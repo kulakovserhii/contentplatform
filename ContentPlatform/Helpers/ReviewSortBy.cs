@@ -3,9 +3,9 @@
 namespace ContentPlatform.Helpers
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum SortType
+    public enum ReviewSortBy
     {
-        Ascending,
-        Descending,
+        Popular, 
+        CreatedAt,
     }
 }

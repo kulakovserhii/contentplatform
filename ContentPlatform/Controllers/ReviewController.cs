@@ -40,5 +40,23 @@ namespace ContentPlatform.Controllers
                 return NotFound(new { message = result });
             return Ok(new { message = result });
         }
+        [HttpGet("my-reviews")]
+        [Authorize]
+        public async Task<IActionResult> GetMyReviews()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await reviewService.GetUserReviewsAsync(int.Parse(userId!));
+            if (result.Count == 0)
+                return Ok(new { message = "User has no reviews" });
+            return Ok(result);
+        }
+        [HttpGet("content-reviews")]
+        public async Task<IActionResult> GetContentReviews(int contentId, [FromQuery] GetReviewsDto getReviewsDto)
+        {
+            var result = await reviewService.GetContentReviews(contentId, getReviewsDto);
+            if (result == null)
+                return NotFound(new { message = "Content has no reviews" });
+            return Ok(result);
+        }
     }
 }

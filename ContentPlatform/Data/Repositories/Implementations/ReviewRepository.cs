@@ -1,4 +1,7 @@
 ﻿using ContentPlatform.Data.Repositories.Interfaces;
+using ContentPlatform.Dto_s;
+using ContentPlatform.Enums;
+using ContentPlatform.Helpers;
 using ContentPlatform.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +9,29 @@ namespace ContentPlatform.Data.Repositories.Implementations
 {
     public class ReviewRepository(AppDbContext appDbContext): IReviewRepository
     {
+        public async Task<List<Review>> GetContentReviews(int contentId, GetReviewsDto getReviewsDto)
+        {
+            var reviews = await appDbContext.Reviews.Include(r => r.User).Include(r => r.RateReviews)
+                .Where(r => r.ContentId == contentId).ToListAsync();
+            if (reviews.Count == 0)
+                return new List<Review>();
+            var popularityCount = reviews.ToDictionary
+                 (r => r.Id,
+                 r => r.RateReviews.Count(rr => rr.VoteType == Evaluate.Like) 
+                 - r.RateReviews.Count(rr => rr.VoteType == Evaluate.Dislike)
+                 );
+            return getReviewsDto.SortBy switch
+            {
+                ReviewSortBy.Popular => getReviewsDto.SortType == SortType.Ascending ?
+                    reviews.OrderBy(r => popularityCount[r.Id]).ToList() :
+                    reviews.OrderByDescending(r => popularityCount[r.Id]).ToList(),
+                ReviewSortBy.CreatedAt => getReviewsDto.SortType == SortType.Ascending ?
+                    reviews.OrderBy(r => r.CreatedAt).ToList() :
+                    reviews.OrderByDescending(r => r.CreatedAt).ToList(),
+                _ => reviews.OrderBy(r => popularityCount[r.Id]).ToList(),
+            };
+        }
+
         public async Task<RateReview> GetRateReview(int userId, int reviewId)
         {
             var rateReview = await appDbContext.RateReviews.Where(rr => rr.UserId == userId && rr.ReviewId == reviewId)
@@ -23,6 +49,12 @@ namespace ContentPlatform.Data.Repositories.Implementations
             var review = await appDbContext.Reviews.Where(r => r.UserId == userId && r.ContentId == contentId)
                 .FirstOrDefaultAsync();
             return review;
+        }
+
+        public async Task<List<Review>> GetUserReviews(int userId)
+        {
+            var userreviews = await appDbContext.Reviews.Include(r => r.Content).Where(r => r.UserId == userId).ToListAsync();
+            return userreviews;
         }
 
         public async Task<RateReview> LeaveRateReview(RateReview rateReview)

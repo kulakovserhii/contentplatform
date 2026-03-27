@@ -10,7 +10,7 @@ namespace ContentPlatform.Dto_s
         public int? YearFrom { get; set;}
         public int? YearTo { get; set; }
         public double? MinRating { get; set; }
-        public SortBy? SortBy { get; set; }
+        public ContentSortBy? SortBy { get; set; }
         public SortType? SortType { get; set; }
         public List<FilmGenre>? FilmGenres { get; set; }
         public List<FilmGenre>? TVShowGenres { get; set; }

@@ -87,10 +87,10 @@ namespace ContentPlatform.Data.Repositories.Implementations
         {
             return contentSearch.SortBy switch
             {
-                SortBy.ReleaseYear => contentSearch.SortType == SortType.Ascending ?
+                ContentSortBy.ReleaseYear => contentSearch.SortType == SortType.Ascending ?
                     results.OrderBy(r => r.ReleaseYear).ToList() :
                     results.OrderByDescending(r => r.ReleaseYear).ToList(),
-                SortBy.AverageRating => contentSearch.SortType == SortType.Ascending ?
+                ContentSortBy.AverageRating => contentSearch.SortType == SortType.Ascending ?
                     results.OrderBy(r => r.AverageRating).ToList() :
                     results.OrderByDescending(r => r.AverageRating).ToList(),
                 _=> results.OrderBy(r => r.AverageRating).ToList(),

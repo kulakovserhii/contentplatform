@@ -414,5 +414,18 @@ namespace ContentPlatform.Services.Implementations
             }
             return result;
         }
+
+        public async Task<List<ContentSmallInfo>> GetContentsSmallInfo()
+        {
+            var contents = await contentRepository.GetAllContentAsync();
+            if (contents == null || contents == new List<Content>())
+                return null;
+            var result = new List<ContentSmallInfo>();
+            foreach(var content in contents)
+            {
+                result.Add(mapper.Map<ContentSmallInfo>(content));
+            }
+            return result;
+        }
     }
 }
