@@ -1,4 +1,5 @@
 ﻿using ContentPlatform.Dto_s;
+using ContentPlatform.Enums;
 using ContentPlatform.Models;
 
 namespace ContentPlatform.Data.Repositories.Interfaces
@@ -15,6 +16,7 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task<RateReview> LeaveRateReview(RateReview rateReview);
         Task RemoveRateReview(RateReview rateReview);
         Task UpdateRateReview(RateReview rateReview);
+        Task<Dictionary<int, Evaluate>> GetUserVotesForReviews(int userId, List<int> reviewIds);
         
     }
 }

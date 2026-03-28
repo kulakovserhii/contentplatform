@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
+using System.Security.Claims;
 
 namespace ContentPlatform.Controllers
 {
@@ -24,7 +25,9 @@ namespace ContentPlatform.Controllers
         [HttpGet("get-content-by-id")]
         public async Task<IActionResult> GetContent([FromQuery] int contentId)
         {
-            var content = await contentService.GetContentByIdAsync(contentId);
+            var userIdExists = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            int? userId = userIdExists != null ? int.Parse(userIdExists) : null;
+            var content = await contentService.GetContentByIdAsync(contentId, userId);
             if(content == null)
                 return NotFound(new { message = "Content not found" });
             return Ok(content);

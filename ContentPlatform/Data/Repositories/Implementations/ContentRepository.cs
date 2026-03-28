@@ -41,8 +41,8 @@ namespace ContentPlatform.Data.Repositories.Implementations
 
         public async Task<Content?> GetContentWithReviewAsync(int contentId)
         {
-            var content = await appDbContext.Contents.Include(c => c.Reviews).ThenInclude(r => r.RateReviews)
-                .ThenInclude(r => r.User)
+            var content = await appDbContext.Contents.Include(c => c.Reviews).ThenInclude(r => r.User)
+                .Include(c => c.Reviews).ThenInclude(r => r.RateReviews)
                 .FirstOrDefaultAsync(c => c.Id == contentId);
             return content;
         }

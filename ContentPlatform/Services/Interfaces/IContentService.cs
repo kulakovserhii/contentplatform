@@ -7,7 +7,7 @@ namespace ContentPlatform.Services.Interfaces
     public interface IContentService
     {
         Task<Content> CreateContentAsync(UniversalContentDto universalContentDto);
-        Task<ContentDetailsDto> GetContentByIdAsync(int contentId);
+        Task<ContentDetailsDto> GetContentByIdAsync(int contentId, int? userId);
         Task<List<ContentDetailsDto>> GetAllContentByTypeAsync(ContentType contentType);
         Task<List<ContentDetailsDto>> GetAllContentWithoutReviewsAsync();
         Task<string> DeleteContentAsync(int contentId);

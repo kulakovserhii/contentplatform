@@ -11,7 +11,8 @@
         public int NumberOfRatings { get; set; }
         public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
-        public List<ReviewDto>? Reviews { get; set; }
+
         public object? AdditionalDetails { get; set; }
+        public List<ReviewDto>? Reviews { get; set; }
     }
 }

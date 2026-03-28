@@ -1,4 +1,5 @@
-﻿using ContentPlatform.Models;
+﻿using ContentPlatform.Enums;
+using ContentPlatform.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace ContentPlatform.Dto_s
@@ -13,5 +14,6 @@ namespace ContentPlatform.Dto_s
         public int DislikeCount { get; set; }
         public DateTime CreatedAt { get; set; }
         public UserDto User { get; set; }
+        public Evaluate? CurrentUserVote { get; set; }
     }
 }

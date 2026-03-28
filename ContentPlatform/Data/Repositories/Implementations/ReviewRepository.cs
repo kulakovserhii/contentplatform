@@ -57,6 +57,15 @@ namespace ContentPlatform.Data.Repositories.Implementations
             return userreviews;
         }
 
+        public async Task<Dictionary<int, Evaluate>> GetUserVotesForReviews(int userId, List<int> reviewIds)
+        {
+            if (reviewIds == null || !reviewIds.Any())
+                return new Dictionary<int, Evaluate>();
+            var result = await appDbContext.RateReviews.Where(rr => rr.UserId == userId && reviewIds.Contains(rr.ReviewId))
+                .ToDictionaryAsync(rr => rr.ReviewId, rr => rr.VoteType);
+            return result;
+        }
+
         public async Task<RateReview> LeaveRateReview(RateReview rateReview)
         {
             appDbContext.RateReviews.Add(rateReview);

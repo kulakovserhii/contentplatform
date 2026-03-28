@@ -6,7 +6,7 @@ using AutoMapper;
 using ContentPlatform.Services.Interfaces;
 namespace ContentPlatform.Services.Implementations
 {
-    public class ContentService(IContentRepository contentRepository, IMapper mapper) : IContentService
+    public class ContentService(IContentRepository contentRepository, IReviewRepository reviewRepository, IMapper mapper) : IContentService
     {
         public async Task<Content> CreateContentAsync(UniversalContentDto universalContentDto)
         {
@@ -46,12 +46,25 @@ namespace ContentPlatform.Services.Implementations
             throw new NotImplementedException();
         }
 
-        public async Task<ContentDetailsDto> GetContentByIdAsync(int contentId)
+        public async Task<ContentDetailsDto> GetContentByIdAsync(int contentId, int? userId)
         {
             var content = await contentRepository.GetContentWithReviewAsync(contentId);
             if (content == null)
                 return null;
-            return mapper.Map<ContentDetailsDto>(content);
+            var contentDto = mapper.Map<ContentDetailsDto>(content);
+            if(userId.HasValue && content.Reviews != null && content.Reviews.Count > 0)
+            {
+                var reviewIds = contentDto.Reviews.Select(r => r.Id).ToList();
+                var userVotes = await reviewRepository.GetUserVotesForReviews(userId.Value, reviewIds);
+                foreach(var reviewDto in contentDto.Reviews)
+                {
+                    if(userVotes.TryGetValue(reviewDto.Id, out var voteType))
+                    {
+                        reviewDto.CurrentUserVote = voteType;
+                    }
+                }
+            }
+            return contentDto;
         }
 
         public async Task<List<ContentDetailsDto>> GetAllContentWithoutReviewsAsync()
@@ -414,7 +427,6 @@ namespace ContentPlatform.Services.Implementations
             }
             return result;
         }
-
         public async Task<List<ContentSmallInfo>> GetContentsSmallInfo()
         {
             var contents = await contentRepository.GetAllContentAsync();

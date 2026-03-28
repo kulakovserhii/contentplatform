@@ -51,7 +51,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
-// Program.cs
+// Program.cs   
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MapperProfile>();
 });
