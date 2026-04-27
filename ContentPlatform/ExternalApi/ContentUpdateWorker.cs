@@ -1,4 +1,5 @@
 ﻿using ContentPlatform.Data.Repositories.Interfaces;
+using ContentPlatform.Dto_s;
 using ContentPlatform.Models;
 using ContentPlatform.Services.Interfaces;
 
@@ -6,7 +7,7 @@ namespace ContentPlatform.ExternalApi
 {
     public class ContentUpdateWorker(IServiceProvider serviceProvider, ILogger<ContentUpdateWorker> logger): BackgroundService
     {
-        private const int limit = 12;
+        private const int limit = 150;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -21,31 +22,32 @@ namespace ContentPlatform.ExternalApi
                         var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
                         var contentRepository = scope.ServiceProvider.GetRequiredService<IContentRepository>();
                         int currentFilmCount = await contentRepository.GetCountAsync<Film>();
-                        if(currentFilmCount < limit)
+                        if (currentFilmCount < limit)
                         {
-                            int needed = limit - currentFilmCount;
-                            logger.LogInformation("Need films: ", needed);
-                            var popularFilms = await tmdbService.GetPopularFilmsAsync(needed);
-                            foreach(var filmDto in popularFilms)
+                            var candidates = await tmdbService.GetPopularFilmsAsync(15);
+                            FilmCreateDto? filmCreateDto = null;
+                            foreach (var candidate in candidates)
                             {
-                                try
+                                bool exists = await contentRepository.ExistsByExternalId(candidate.ExternalId!);
+                                if (!exists)
                                 {
-                                    bool exists = await contentRepository.ExistsByExternalId(filmDto.ExternalId!);
-                                    if (!exists)
-                                    {
-                                        await contentService.CreateFilmAsync(filmDto);
-                                        logger.LogInformation("Added film: " + filmDto.Title);
-                                    }
+                                    filmCreateDto = candidate;
+                                    break;
                                 }
-                                catch(Exception ex)
-                                {
-                                    logger.LogError(ex, "Error adding film: " + filmDto.Title);
-                                }
+                            }
+                            if (filmCreateDto != null)
+                            {
+                                await contentService.CreateFilmAsync(filmCreateDto);
+                                logger.LogInformation("Daily update: added film '{Title}'");
+                            }
+                            else
+                            {
+                                logger.LogWarning("Daily update: No new films today");
                             }
                         }
                         else
                         {
-                            logger.LogInformation("No new films needed. Current count: ", currentFilmCount);
+                            logger.LogInformation("Daily update: limit 150 filmes was reached");
                         }
                     }
                     await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
