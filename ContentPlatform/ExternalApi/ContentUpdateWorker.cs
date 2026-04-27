@@ -21,28 +21,47 @@ namespace ContentPlatform.ExternalApi
                         var tmdbService = scope.ServiceProvider.GetRequiredService<ITmdbService>();
                         var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
                         var contentRepository = scope.ServiceProvider.GetRequiredService<IContentRepository>();
+                        var lastFmService = scope.ServiceProvider.GetRequiredService<ILastFmService>();
                         int currentFilmCount = await contentRepository.GetCountAsync<Film>();
                         if (currentFilmCount < limit)
                         {
-                            var candidates = await tmdbService.GetPopularFilmsAsync(15);
-                            FilmCreateDto? filmCreateDto = null;
+                            int filmsToAddCount = currentFilmCount < 75 ? (75 - currentFilmCount) : 1;
+                            var candidates = await tmdbService.GetPopularFilmsAsync(filmsToAddCount);
+                            int addedFilmsInThisCycle = 0;
                             foreach (var candidate in candidates)
                             {
-                                bool exists = await contentRepository.ExistsByExternalId(candidate.ExternalId!);
-                                if (!exists)
-                                {
-                                    filmCreateDto = candidate;
+                                if (addedFilmsInThisCycle >= filmsToAddCount)
                                     break;
+                                if(!await contentRepository.ExistsByExternalId(candidate.ExternalId!))
+                                {
+                                    await contentService.CreateFilmAsync(candidate);
+                                    addedFilmsInThisCycle++;
                                 }
                             }
-                            if (filmCreateDto != null)
+                        }
+                        int currentMusicCount = await contentRepository.GetCountAsync<Music>();
+                        if(currentMusicCount < limit)
+                        {
+                            int musicToAddCount = currentMusicCount < 75 ? (75 - currentMusicCount) : 1;
+                            var musicCandidates = await lastFmService.GetPopularMusic(musicToAddCount);
+                            int addedMusicInThisCycle = 0;
+                            foreach(var musicDto in musicCandidates)
                             {
-                                await contentService.CreateFilmAsync(filmCreateDto);
-                                logger.LogInformation("Daily update: added film '{Title}'");
-                            }
-                            else
-                            {
-                                logger.LogWarning("Daily update: No new films today");
+                                if (addedMusicInThisCycle >= musicToAddCount)
+                                    break;
+                                try
+                                {
+                                    if (!await contentRepository.ExistsByExternalId(musicDto.ExternalId!))
+                                    {
+                                        await contentService.CreateMusicAsync(musicDto);
+                                        addedMusicInThisCycle++;
+                                        logger.LogInformation("Added music: {Artist} - {Title}");
+                                    }
+                                }
+                                catch(Exception ex)
+                                {
+                                    logger.LogError("Failed to load track {Title}: {Message}");
+                                }
                             }
                         }
                         else

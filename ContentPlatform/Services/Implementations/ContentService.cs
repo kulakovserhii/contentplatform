@@ -203,6 +203,7 @@ namespace ContentPlatform.Services.Implementations
                 Label = musicCreateDto.MusicLabel ?? "No label",
                 Lanquage = musicCreateDto.MusicLanquage,
                 Genres = musicCreateDto.MusciGenres,
+                ExternalId = musicCreateDto.ExternalId,
             };
             await contentRepository.CreateContentAsync(music);
             return music;

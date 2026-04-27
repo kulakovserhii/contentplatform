@@ -2,7 +2,7 @@
 
 namespace ContentPlatform.Helpers
 {
-    public static class GenreMap
+    public static class FilmGenreMap
     {
         public static readonly Dictionary<int, FilmGenre> genreMap = new Dictionary<int, FilmGenre>
         {

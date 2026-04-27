@@ -59,6 +59,12 @@ builder.Services.AddHttpClient<ITmdbService, TmdbService>(client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", builder.Configuration["TMDB:ApiKey"]);
 });
+builder.Services.AddHttpClient<ILastFmService, LastFmService>(client =>
+{
+    client.BaseAddress = new Uri("https://ws.audioscrobbler.com/2.0/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+builder.Services.AddScoped<ILastFmService, LastFmService>();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MapperProfile>();
 });

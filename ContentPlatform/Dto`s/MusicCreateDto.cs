@@ -10,5 +10,6 @@ namespace ContentPlatform.Dto_s
         public string? MusicLabel { get; set; }
         public string? MusicLanquage { get; set; }
         public List<MusicGenre>? MusciGenres { get; set; }
+        public string? ExternalId { get; set; }
     }
 }

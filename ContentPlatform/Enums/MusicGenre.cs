@@ -18,5 +18,6 @@ namespace ContentPlatform.Enums
         Blues,
         Metal,
         Folk,
+        Other,
     }
 }

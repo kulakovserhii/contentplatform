@@ -77,7 +77,7 @@ namespace ContentPlatform.Services.Implementations
             }
             foreach (var gente in tmdbGenres)
             {
-                if(GenreMap.genreMap.TryGetValue(gente.Id, out var filmGenre))
+                if(FilmGenreMap.genreMap.TryGetValue(gente.Id, out var filmGenre))
                 {
                     result.Add(filmGenre);
                 }
