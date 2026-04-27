@@ -14,5 +14,7 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task<List<Content>> SearchContentAsync(ContentSearch searchParams);
         Task UpdateContentRating(int contentId);
         Task<TVShow>? GetIdByExternalId(string externalId);
+        Task<bool> ExistsByExternalId(string externalId);
+        Task<int> GetCountAsync<T>() where T: Content;
     }
 }

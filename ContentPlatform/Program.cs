@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using System.Net.Http.Headers;
+using ContentPlatform.ExternalApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,13 +53,16 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
-// Program.cs   
+builder.Services.AddHttpClient<ITmdbService, TmdbService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", builder.Configuration["TMDB:ApiKey"]);
+});
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MapperProfile>();
 });
-
-
-
+builder.Services.AddHostedService<ContentUpdateWorker>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

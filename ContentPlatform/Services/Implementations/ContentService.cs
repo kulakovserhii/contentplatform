@@ -102,6 +102,7 @@ namespace ContentPlatform.Services.Implementations
                 CountryOfOrigin = filmCreateDto.FilmCountryOfOrigin,
                 Awards = filmCreateDto.FilmAwards,
                 Genres = filmCreateDto.FilmGenres,
+                ExternalId = filmCreateDto.ExternalId,
             };
             await contentRepository.CreateContentAsync(film);
             return film;
@@ -125,6 +126,7 @@ namespace ContentPlatform.Services.Implementations
                 TotalEpisodes = tvShowCreateDto.TVShowTotalEpisodes ?? 0,
                 Genres = tvShowCreateDto.TVShowGenres ?? new(),
                 EndDate = tvShowCreateDto.TVShowEndDate ?? null,
+
             };
             await contentRepository.CreateContentAsync(tvShow);
             return tvShow;

@@ -13,5 +13,6 @@ namespace ContentPlatform.Dto_s
         public string? FilmCountryOfOrigin { get; set; }
         public string? FilmAwards { get; set; }
         public List<FilmGenre>? FilmGenres { get; set; }
+        public string? ExternalId { get; set; }
     }
 }

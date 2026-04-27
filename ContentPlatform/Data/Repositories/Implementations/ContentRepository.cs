@@ -213,5 +213,17 @@ namespace ContentPlatform.Data.Repositories.Implementations
             var tvshow = await appDbContext.TVShows.FirstOrDefaultAsync(ts => ts.ExternalId == externalId);
             return tvshow;
         }
+
+        public async Task<int> GetCountAsync<T>() where T : Content
+        {
+            var count = await appDbContext.Set<T>().CountAsync();
+            return count;
+        }
+
+        public async Task<bool> ExistsByExternalId(string externalId)
+        {
+            var exists = await appDbContext.Contents.AnyAsync(c => c.ExternalId == externalId);
+            return exists;
+        }
     }
 }

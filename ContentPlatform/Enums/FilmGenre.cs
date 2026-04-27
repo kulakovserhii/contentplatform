@@ -12,6 +12,9 @@ namespace ContentPlatform.Enums
         [Display(Name = "Science Fiction")]
         ScienceFiction,
         Action,
+        Music,
+        TVMovie,
+        War,
         Horror,
         Fantasy,
         Romance,
@@ -22,8 +25,11 @@ namespace ContentPlatform.Enums
         Musical,
         Animation,
         Documentary,
+        Family,
         Western,
         Crime,
         Mystery,
+        History,
+        Other,
     }
 }
