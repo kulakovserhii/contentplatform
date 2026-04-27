@@ -45,7 +45,6 @@ namespace ContentPlatform.Services.Implementations
             }
             return contentsWithoutReviews;
         }
-
         public async Task<string> DeleteContentAsync(int contentId)
         {
             var content = await contentRepository.GetContentByIdAsync<Content>(contentId);
@@ -55,144 +54,6 @@ namespace ContentPlatform.Services.Implementations
             if (!result)
                 return "Content deletion failed";
             return "Content deleted successfully";
-        }
-        public async Task<ContentDetailsDto> UpdateContentAsync(int contentId, UpdateContentDto dto)
-        {
-            var content = await contentRepository.GetContentByIdAsync<Content>(contentId);
-            if (content == null)
-                return null;
-           if(content.GetType().Name != dto.ContentType.ToString())
-                throw new Exception($"Content type mismatch. Expexted {content.GetType().Name} but got {dto.ContentType}");
-            if (!string.IsNullOrEmpty(dto.Title))
-                content.Title = dto.Title;
-            if (!string.IsNullOrEmpty(dto.Description))
-                content.Description = dto.Description;
-            if (dto.ReleaseDate.HasValue)
-                content.ReleaseDate = dto.ReleaseDate.Value;
-            if (dto.ReleaseYear.HasValue)
-                content.ReleaseYear = dto.ReleaseYear.Value;
-            if (!string.IsNullOrEmpty(dto.ImageUrl))
-                content.ImageUrl = dto.ImageUrl;
-            switch (content)
-            {
-                case Film film:
-                    UpdateFilm(film, dto);
-                    break;
-                case TVShow tvShow:
-                    UpdateTVShow(tvShow, dto);
-                    break;
-                case Music music:
-                    UpdateMusic(music, dto);
-                    break;
-                case Episode episode:
-                    await UpdateEpisode(episode, dto);
-                    break;
-                case Game game:
-                    UpdateGame(game, dto);
-                    break;
-                case Book book:
-                    UpdateBook(book, dto);
-                    break;
-            }
-            await contentRepository.UpdateContentAsync(content);
-            return mapper.Map<ContentDetailsDto>(content);
-        }
-        private void UpdateFilm(Film film, UpdateContentDto dto)
-        {
-            if(!string.IsNullOrEmpty(dto.FilmDirector))
-                film.Director = dto.FilmDirector;
-            if(!string.IsNullOrEmpty(dto.FilmWriters))
-                film.Writers = dto.FilmWriters;
-            if(!string.IsNullOrEmpty(dto.FilmMainCast))
-                film.MainCast = dto.FilmMainCast;
-            if(dto.FilmBudget.HasValue && dto.FilmBudget.Value > 0)
-                film.Budget = dto.FilmBudget.Value;
-            if(dto.FilmBoxOffice.HasValue && dto.FilmBoxOffice.Value > 0)
-                film.BoxOffice  = dto.FilmBoxOffice.Value;
-            if(dto.FilmRuntimeInMinutes.HasValue && dto.FilmRuntimeInMinutes.Value > 0)
-                film.RuntimeInMinutes = dto.FilmRuntimeInMinutes.Value;
-            if(!string.IsNullOrEmpty(dto.FilmCountryOfOrigin))
-                film.CountryOfOrigin = dto.FilmCountryOfOrigin;
-            if(!string.IsNullOrEmpty(dto.FilmAwards))
-                film.Awards = dto.FilmAwards;
-            if(dto.FilmGenres.Count > 0)
-                film.Genres = dto.FilmGenres;
-        }
-        private void UpdateTVShow(TVShow tvShow, UpdateContentDto dto)
-        {
-            if(!string.IsNullOrEmpty(dto.TVShowDirector))
-                tvShow.Director = dto.TVShowDirector;
-            if(!string.IsNullOrEmpty(dto.TVShowCreators))
-                tvShow.Creators = dto.TVShowCreators;
-            if(!string.IsNullOrEmpty(dto.TVShowMainCast))
-                tvShow.MainCast = dto.TVShowMainCast;
-            if(dto.TVShowTotalSeasons.HasValue && dto.TVShowTotalSeasons > 0)
-                tvShow.TotalSeasons = dto.TVShowTotalSeasons.Value;
-            if(dto.TVShowTotalEpisodes.HasValue && dto.TVShowTotalEpisodes > 0)
-                tvShow.TotalEpisodes = dto.TVShowTotalEpisodes.Value;
-            if(!string.IsNullOrEmpty(dto.TVShowNetworks))
-                tvShow.Networks = dto.TVShowNetworks;
-            if(dto.TVShowEndDate.HasValue)
-                tvShow.EndDate = dto.TVShowEndDate.Value;
-            if(dto.TVShowGenres.Count > 1)
-                tvShow.Genres = dto.TVShowGenres;
-        }
-        private void UpdateMusic(Music music, UpdateContentDto dto)
-        {
-            if(!string.IsNullOrEmpty(dto.MusicArtist))
-                music.Artist = dto.MusicArtist;
-            if(!string.IsNullOrEmpty(dto.MusicAlbum))
-                music.Album = dto.MusicAlbum;
-            if(dto.MusicDurationInSeconds.HasValue && dto.MusicDurationInSeconds > 0)
-                music.DurationInSeconds = dto.MusicDurationInSeconds.Value;
-            if(!string.IsNullOrEmpty(dto.MusicLabel))
-                music.Label = dto.MusicLabel;
-            if (!string.IsNullOrEmpty(dto.MusicLanguage))
-                music.Lanquage = dto.MusicLanguage;
-            if(dto.MusicGenres.Count > 0)
-                music.Genres = dto.MusicGenres;
-        }
-        private async Task UpdateEpisode(Episode episode, UpdateContentDto dto)
-        {
-            if(dto.EpisodeSeasonNumber.HasValue &&  dto.EpisodeSeasonNumber > 0)
-                episode.SeasonNumber = dto.EpisodeSeasonNumber.Value;
-            if (dto.TVShowId.HasValue && dto.TVShowId.Value != episode.TVShowId)
-            {
-                var tvShowExists = await contentRepository.GetContentByIdAsync<TVShow>(dto.TVShowId.Value);
-                if (tvShowExists == null)
-                    throw new Exception($"TV Show with Id {dto.TVShowId} does not exist");
-                episode.TVShowId = dto.TVShowId.Value;
-            }
-            if (dto.EpisodeNumber.HasValue && dto.EpisodeNumber > 0)
-                episode.EpisodeNumber = dto.EpisodeNumber.Value;
-            if (dto.EpisodesTotalNumber.HasValue && dto.EpisodesTotalNumber > 0)
-                episode.EpisodeNumber = dto.EpisodesTotalNumber.Value;
-            if(dto.EpisodeRuntimeInMinutes.HasValue && dto.EpisodeRuntimeInMinutes > 0)
-                episode.RuntimeInMinutes = dto.EpisodeRuntimeInMinutes.Value;
-        }
-        private void UpdateGame(Game game, UpdateContentDto dto)
-        {
-            if(!string.IsNullOrEmpty(dto.GamePublisher))
-                game.Publisher = dto.GamePublisher;
-            if(!string.IsNullOrEmpty(dto.GameDeveloper))
-                game.Developer = dto.GameDeveloper;
-            if(dto.GamePlatforms.Count > 0)
-                game.Platforms = dto.GamePlatforms;
-            if(dto.GameGenres.Count > 0)
-                game.Genres = dto.GameGenres;
-        }
-        private void UpdateBook(Book book, UpdateContentDto dto)
-        {
-            if (!string.IsNullOrEmpty(dto.BookAuthor))
-                book.Author = dto.BookAuthor;
-            if (!string.IsNullOrEmpty(dto.BookPublisher))
-                book.Publisher = dto.BookPublisher;
-            if(!string.IsNullOrEmpty(dto.BookOriginalLanguage))
-                book.OriginalLanguage = dto.BookOriginalLanguage;
-            if (dto.BookPages.HasValue && dto.BookPages.Value > 0)
-                book.Pages = dto.BookPages.Value;
-            if(dto.BookGenres.Count > 0)
-                book.Genres = dto.BookGenres;
         }
         public async Task<List<ContentDetailsDto>> SearchContentAsync(ContentSearch contentSearch)
         {
@@ -218,7 +79,6 @@ namespace ContentPlatform.Services.Implementations
             }
             return result;
         }
-
         public async Task<Film> CreateFilmAsync(FilmCreateDto filmCreateDto)
         {
             BaseValidation(filmCreateDto);
@@ -369,6 +229,157 @@ namespace ContentPlatform.Services.Implementations
             if (string.IsNullOrEmpty(contentCreateDto.Title) ||
                 string.IsNullOrEmpty(contentCreateDto.Description))
                 throw new Exception("Title and description are required");
+        }
+        private void UpdateValidation(Content content, UpdateContentDto dto)
+        {
+            if(!string.IsNullOrEmpty(dto.Title))
+                content.Title = dto.Title;
+            if(!string.IsNullOrEmpty(dto.Description))
+                content.Description = dto.Description;
+            if(dto.ReleaseYear != null && dto.ReleaseYear.HasValue && dto.ReleaseYear.Value > 0)
+                content.ReleaseYear = dto.ReleaseYear.Value;
+            if(dto.ReleaseDate != null && dto.ReleaseDate.HasValue)
+                content.ReleaseDate = dto.ReleaseDate.Value;
+            if(!string.IsNullOrEmpty(dto.ImageUrl))
+                content.ImageUrl = dto.ImageUrl;
+        }
+        public async Task<ContentDetailsDto> UpdateFilmAsync(int filmId, UpdateFilmDto updateFilmDto)
+        {
+            var film = await contentRepository.GetContentByIdAsync<Film>(filmId);
+            if (film == null)
+                return null;
+            UpdateValidation(film, updateFilmDto);
+            if (!string.IsNullOrEmpty(updateFilmDto.FilmDirector))
+                film.Director = updateFilmDto.FilmDirector;
+            if (!string.IsNullOrEmpty(updateFilmDto.FilmWriters))
+                film.Writers = updateFilmDto.FilmWriters;
+            if (!string.IsNullOrEmpty(updateFilmDto.FilmMainCast))
+                film.MainCast = updateFilmDto.FilmMainCast;
+            if (updateFilmDto.FilmBudget.HasValue && updateFilmDto.FilmBudget.Value > 0)
+                film.Budget = updateFilmDto.FilmBudget.Value;
+            if (updateFilmDto.FilmBoxOffice.HasValue && updateFilmDto.FilmBoxOffice.Value > 0)
+                film.BoxOffice = updateFilmDto.FilmBoxOffice.Value;
+            if (updateFilmDto.FilmRuntimeInMinutes.HasValue && updateFilmDto.FilmRuntimeInMinutes.Value > 0)
+                film.RuntimeInMinutes = updateFilmDto.FilmRuntimeInMinutes.Value;
+            if (!string.IsNullOrEmpty(updateFilmDto.FilmCountryOfOrigin))
+                film.CountryOfOrigin = updateFilmDto.FilmCountryOfOrigin;
+            if (!string.IsNullOrEmpty(updateFilmDto.FilmAwards))
+                film.Awards = updateFilmDto.FilmAwards;
+            if (updateFilmDto.FilmGenres.Count > 0)
+                film.Genres = updateFilmDto.FilmGenres;
+            await contentRepository.UpdateContentAsync(film);
+            return mapper.Map<ContentDetailsDto>(film);
+        }
+
+        public async Task<ContentDetailsDto> UpdateTVShowAsync(int tVShowId, UpdateTVShowDto updateTVShowDto)
+        {
+            var tvShow = await contentRepository.GetContentByIdAsync<TVShow>(tVShowId);
+            if(tvShow == null)
+                return null;
+            UpdateValidation(tvShow, updateTVShowDto);
+            if (!string.IsNullOrEmpty(updateTVShowDto.TVShowDirector))
+                tvShow.Director = updateTVShowDto.TVShowDirector;
+            if (!string.IsNullOrEmpty(updateTVShowDto.TVShowCreators))
+                tvShow.Creators = updateTVShowDto.TVShowCreators;
+            if (!string.IsNullOrEmpty(updateTVShowDto.TVShowMainCast))
+                tvShow.MainCast = updateTVShowDto.TVShowMainCast;
+            if (updateTVShowDto.TVShowTotalSeasons.HasValue && updateTVShowDto.TVShowTotalSeasons > 0)
+                tvShow.TotalSeasons = updateTVShowDto.TVShowTotalSeasons.Value;
+            if (updateTVShowDto.TVShowTotalEpisodes.HasValue && updateTVShowDto.TVShowTotalEpisodes > 0)
+                tvShow.TotalEpisodes = updateTVShowDto.TVShowTotalEpisodes.Value;
+            if (!string.IsNullOrEmpty(updateTVShowDto.TVShowNetworks))
+                tvShow.Networks = updateTVShowDto.TVShowNetworks;
+            if (updateTVShowDto.TVShowEndDate.HasValue)
+                tvShow.EndDate = updateTVShowDto.TVShowEndDate.Value;
+            if(updateTVShowDto.TVShowGenres.Count > 0)
+                tvShow.Genres = updateTVShowDto.TVShowGenres;
+            await contentRepository.UpdateContentAsync(tvShow);
+            return mapper.Map<ContentDetailsDto>(tvShow);
+        }
+
+        public async Task<ContentDetailsDto> UpdateEpisodeAsync(int episodeId, UpdateEpisodeDto updateEpisodeDto)
+        {
+            var episode = await contentRepository.GetContentByIdAsync<Episode>(episodeId);
+            if (episode == null)
+                return null;
+            UpdateValidation(episode, updateEpisodeDto);
+            if (updateEpisodeDto.EpisodeSeasonNumber.HasValue && updateEpisodeDto.EpisodeSeasonNumber > 0)
+                episode.SeasonNumber = updateEpisodeDto.EpisodeSeasonNumber.Value;
+            if (updateEpisodeDto.EpisodeTVShowId.HasValue && updateEpisodeDto.EpisodeTVShowId.Value != episode.TVShowId)
+            {
+                var tvshowExists = await contentRepository.GetContentByIdAsync<TVShow>(updateEpisodeDto.EpisodeTVShowId.Value);
+                if(tvshowExists == null)
+                    throw new Exception($"TV Show with Id {updateEpisodeDto.EpisodeTVShowId.Value} does not exist");
+                episode.TVShowId = updateEpisodeDto.EpisodeTVShowId.Value;
+            }
+            if (updateEpisodeDto.EpisodeNumber.HasValue && updateEpisodeDto.EpisodeNumber > 0)
+                episode.EpisodeNumber = updateEpisodeDto.EpisodeNumber.Value;
+            if (updateEpisodeDto.EpisodesTotalNumber.HasValue && updateEpisodeDto.EpisodesTotalNumber > 0)
+                episode.TotalNumber = updateEpisodeDto.EpisodesTotalNumber.Value;
+            if (updateEpisodeDto.EpisodeRuntimeInMinutes.HasValue && updateEpisodeDto.EpisodeRuntimeInMinutes > 0)
+                episode.RuntimeInMinutes = updateEpisodeDto.EpisodeRuntimeInMinutes.Value;
+            await contentRepository.UpdateContentAsync(episode);
+            return mapper.Map<ContentDetailsDto>(episode);
+        }
+
+        public async Task<ContentDetailsDto> UpdateBookAsync(int bookId, UpdateBookDto updateBookDto)
+        {
+            var book = await contentRepository.GetContentByIdAsync<Book>(bookId);
+            if(book == null)
+                return null;
+            UpdateValidation(book, updateBookDto);
+            if (!string.IsNullOrEmpty(updateBookDto.BookAuthor))
+                book.Author = updateBookDto.BookAuthor;
+            if (!string.IsNullOrEmpty(updateBookDto.BookPublisher))
+                book.Publisher = updateBookDto.BookPublisher;
+            if (!string.IsNullOrEmpty(updateBookDto.BookOriginalLanguage))
+                book.OriginalLanguage = updateBookDto.BookOriginalLanguage;
+            if(updateBookDto.BookPages.HasValue && updateBookDto.BookPages.Value > 0)
+                book.Pages = updateBookDto.BookPages.Value;
+            if(updateBookDto.BookPages.HasValue && updateBookDto.BookGenres.Count > 0 )
+                book.Genres = updateBookDto.BookGenres;
+            await contentRepository.UpdateContentAsync(book);
+            return mapper.Map<ContentDetailsDto>(book);
+        }
+
+        public async Task<ContentDetailsDto> UpdateMusicAsync(int musicId, UpdateMusicDto updateMusicDto)
+        {
+            var music = await contentRepository.GetContentByIdAsync<Music>(musicId);
+            if (music == null)
+                return null;
+            UpdateValidation(music, updateMusicDto);
+            if (!string.IsNullOrEmpty(updateMusicDto.MusicArtist))
+                music.Artist = updateMusicDto.MusicArtist;
+            if (!string.IsNullOrEmpty(updateMusicDto.MusicAlbum))
+                music.Album = updateMusicDto.MusicAlbum;
+            if (updateMusicDto.MusicDurationInSeconds.HasValue && updateMusicDto.MusicDurationInSeconds.Value > 0)
+                music.DurationInSeconds = updateMusicDto.MusicDurationInSeconds.Value;
+            if (!string.IsNullOrEmpty(updateMusicDto.MusicLabel))
+                music.Label = updateMusicDto.MusicLabel;
+            if (!string.IsNullOrEmpty(updateMusicDto.MusicLanguage))
+                music.Lanquage = updateMusicDto.MusicLanguage;
+            if (updateMusicDto.MusicGenres.Count > 0)
+                music.Genres = updateMusicDto.MusicGenres;
+            await contentRepository.UpdateContentAsync(music);
+            return mapper.Map<ContentDetailsDto>(music);
+        }
+
+        public async Task<ContentDetailsDto> UpdateGameAsync(int gameId, UpdateGameDto updateGameDto)
+        {
+            var game = await contentRepository.GetContentByIdAsync<Game>(gameId);
+            if (game == null)
+                return null;
+            UpdateValidation(game, updateGameDto);
+            if (!string.IsNullOrEmpty(updateGameDto.GamePublisher))
+                game.Publisher = updateGameDto.GamePublisher;
+            if (!string.IsNullOrEmpty(updateGameDto.GameDeveloper))
+                game.Developer = updateGameDto.GameDeveloper;
+            if (updateGameDto.GamePlatforms.Count > 0)
+                game.Platforms.AddRange(updateGameDto.GamePlatforms);
+            if (updateGameDto.GameGenres.Count > 0)
+                game.Genres = updateGameDto.GameGenres;
+            await contentRepository.UpdateContentAsync(game);
+            return mapper.Map<ContentDetailsDto>(game);
         }
     }
 }

@@ -96,22 +96,59 @@ namespace ContentPlatform.Controllers
                 return BadRequest(new { message = result });
             return Ok(new { message = result });
         }
-        [HttpPut("update-content")]
+        [HttpPut("film/{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateContent([FromQuery] int contentId, [FromForm] UpdateContentDto dto)
+        public async Task<IActionResult> UpdateFilm(int id, [FromForm] UpdateFilmDto dto)
         {
-            try
-            {
-                var update = await contentService.UpdateContentAsync(contentId, dto);
-                if (update == null)
-                    return BadRequest(new { message = "Content update failed" });
-                return Ok(update);
-            }
-           
-            catch(Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await contentService.UpdateFilmAsync(id, dto);
+            if (result == null)
+                return BadRequest(new { message = "Film update failed" });
+            return Ok(result);
+        }
+        [HttpPut("tvshow/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateTvShow(int id, [FromForm] UpdateTVShowDto dto)
+        {
+            var result = await contentService.UpdateTVShowAsync(id, dto);
+            if (result == null)
+                return BadRequest(new { message = "TvShow update failed" });
+            return Ok(result);
+        }
+        [HttpPut("music/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateMusic(int id, [FromForm] UpdateMusicDto dto)
+        {
+            var result = await contentService.UpdateMusicAsync(id, dto);
+            if (result == null)
+                return BadRequest(new { message = "Music update failed" });
+            return Ok(result);
+        }
+        [HttpPut("game/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateGame(int id, [FromForm] UpdateGameDto dto)
+        {
+            var result = await contentService.UpdateGameAsync(id, dto);
+            if (result == null)
+                return BadRequest(new { message = "Game update failed" });
+            return Ok(result);
+        }
+        [HttpPut("episode/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateEpisode(int id, [FromForm] UpdateEpisodeDto dto)
+        {
+            var result = await contentService.UpdateEpisodeAsync(id, dto);
+            if (result == null)
+                return BadRequest(new { message = "Episode update failed" });
+            return Ok(result);
+        }
+        [HttpPut("book/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateBook(int id, [FromForm] UpdateBookDto dto)
+        {
+            var result = await contentService.UpdateBookAsync(id, dto);
+            if (result == null)
+                return BadRequest(new { message = "Book update failed" });
+            return Ok(result);
         }
         [HttpGet("search-content")]
         public async Task<IActionResult> SearchContent([FromQuery] ContentSearch contentSearch)

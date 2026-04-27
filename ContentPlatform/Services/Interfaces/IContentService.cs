@@ -16,7 +16,12 @@ namespace ContentPlatform.Services.Interfaces
         Task<List<ContentDetailsDto>> GetAllContentByTypeAsync(ContentType contentType);
         Task<List<ContentDetailsDto>> GetAllContentWithoutReviewsAsync();
         Task<string> DeleteContentAsync(int contentId);
-        Task<ContentDetailsDto> UpdateContentAsync(int contentId, UpdateContentDto dto);
+        Task<ContentDetailsDto> UpdateFilmAsync(int filmId, UpdateFilmDto updateFilmDto);
+        Task<ContentDetailsDto> UpdateTVShowAsync(int tVShowId, UpdateTVShowDto updateTVShowDto);
+        Task<ContentDetailsDto> UpdateEpisodeAsync(int episodeId, UpdateEpisodeDto updateEpisodeDto);
+        Task<ContentDetailsDto> UpdateBookAsync(int bookId, UpdateBookDto updateBookDto);
+        Task<ContentDetailsDto> UpdateMusicAsync(int musicId, UpdateMusicDto updateMusicDto);
+        Task<ContentDetailsDto> UpdateGameAsync(int gameId, UpdateGameDto updateGameDto);
         Task<List<ContentDetailsDto>> SearchContentAsync(ContentSearch contentSearch);
         Task<List<ContentSmallInfo>> GetContentsSmallInfo();
     }
