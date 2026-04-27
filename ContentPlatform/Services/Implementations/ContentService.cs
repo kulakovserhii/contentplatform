@@ -4,48 +4,15 @@ using ContentPlatform.Enums;
 using ContentPlatform.Models;
 using AutoMapper;
 using ContentPlatform.Services.Interfaces;
+using System.Globalization;
 namespace ContentPlatform.Services.Implementations
 {
     public class ContentService(IContentRepository contentRepository, IReviewRepository reviewRepository, IMapper mapper) : IContentService
     {
-        public async Task<Content> CreateContentAsync(UniversalContentDto universalContentDto)
-        {
-            universalContentDto.AverageRating = 0;
-            universalContentDto.NumberOfRatings = 0;
-            universalContentDto.CreatedAt = DateTime.UtcNow;
-            Content content;
-            switch (universalContentDto.ContentType)
-            {
-                case ContentType.Film:
-                    content = CreateFilm(universalContentDto);
-                    break;
-                case ContentType.TVShow:
-                    content = CreateTVShow(universalContentDto);
-                    break;
-                case ContentType.Music:
-                    content = CreateMusic(universalContentDto);
-                    break;
-                case ContentType.Episode:
-                    content = await CreateEpisode(universalContentDto);
-                    break;
-                case ContentType.Game:
-                    content = CreateGame(universalContentDto);
-                    break;
-                case ContentType.Book:
-                    content = CreateBook(universalContentDto);
-                    break;
-                default:
-                    throw new Exception("Invalid content type");
-            }
-            await contentRepository.CreateContentAsync(content);
-            return content;
-        }
-
         public Task<List<ContentDetailsDto>> GetAllContentByTypeAsync(ContentType contentType)
         {
             throw new NotImplementedException();
         }
-
         public async Task<ContentDetailsDto> GetContentByIdAsync(int contentId, int? userId)
         {
             var content = await contentRepository.GetContentWithReviewAsync(contentId);
@@ -66,7 +33,6 @@ namespace ContentPlatform.Services.Implementations
             }
             return contentDto;
         }
-
         public async Task<List<ContentDetailsDto>> GetAllContentWithoutReviewsAsync()
         {
             var contents = await contentRepository.GetAllContentAsync();
@@ -89,193 +55,6 @@ namespace ContentPlatform.Services.Implementations
             if (!result)
                 return "Content deletion failed";
             return "Content deleted successfully";
-        }
-        private bool ContentValidator(UniversalContentDto dto)
-        {
-            if (string.IsNullOrEmpty(dto.Title))
-                return false;
-            if (string.IsNullOrEmpty(dto.Description))
-                return false;
-            if (dto.ReleaseYear == default)
-                return false;
-            return true;
-        }
-        private Film CreateFilm(UniversalContentDto dto)
-        {
-            if (!ContentValidator(dto))
-                throw new Exception("Title, descriprtion and release date must be filled");
-            if (string.IsNullOrEmpty(dto.FilmDirector))
-                throw new Exception("Film director field must be filled");
-            if (string.IsNullOrEmpty(dto.FilmWriters))
-                throw new Exception("Film writers field must be filled");
-            if (string.IsNullOrEmpty(dto.FilmMainCast))
-                throw new Exception("Film main cast field must be filled");
-            if (dto.FilmRuntimeInMinutes == null || dto.FilmRuntimeInMinutes <=0 )
-                throw new Exception("Film runtime in minutes field must be filled and greater than 0");
-            if (dto.FilmGenres.Count < 1)
-                throw new Exception("Film genres field must be filled with at least one genre");
-            return new Film
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                ReleaseYear = dto.ReleaseYear,
-                ReleaseDate = dto.ReleaseDate,
-                ImageUrl = dto.ImageUrl,
-                Director = dto.FilmDirector!,
-                Writers = dto.FilmWriters!,
-                MainCast = dto.FilmMainCast!,
-                Budget = dto.FilmBudget ?? 0,
-                BoxOffice = dto.FilmBoxOffice ?? 0,
-                RuntimeInMinutes = dto.FilmRuntimeInMinutes ?? 0,
-                CountryOfOrigin = dto.FilmCountryOfOrigin,
-                Awards = dto.FilmAwards,
-                Genres = dto.FilmGenres,
-            };
-        }
-        private TVShow CreateTVShow(UniversalContentDto dto)
-        {
-            if (!ContentValidator(dto))
-                throw new Exception("Title, descriprtion and release date must be filled");
-            if(string.IsNullOrEmpty(dto.TVShowDirector))
-                throw new Exception("TV show director field must be filled");
-            if(string.IsNullOrEmpty(dto.TVShowCreators))
-                throw new Exception("TV show creators field must be filled");
-            if(string.IsNullOrEmpty(dto.TVShowMainCast))
-                throw new Exception("TV show main cast field must be filled");
-            if(string.IsNullOrEmpty(dto.TVShowNetworks))
-                throw new Exception("TV show networks field must be filled");
-            if(dto.TVShowTotalSeasons == null || dto.TVShowTotalSeasons <= 0)
-                throw new Exception("TV show total seasons field must be filled and greater than 0");
-            if(dto.TVShowTotalEpisodes == null || dto.TVShowTotalEpisodes <= 0)
-                throw new Exception("TV show total episodes field must be filled and greater than 0");
-            if(dto.TVShowGenres.Count < 1)
-                throw new Exception("TV show genres field must be filled with at least one genre");
-            return new TVShow
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                ReleaseYear = dto.ReleaseYear,
-                ReleaseDate = dto.ReleaseDate,
-                ImageUrl = dto.ImageUrl,
-                Director = dto.TVShowDirector!,
-                Creators = dto.TVShowCreators!,
-                MainCast = dto.TVShowMainCast!,
-                Networks = dto.TVShowNetworks!,
-                TotalSeasons = dto.TVShowTotalSeasons ?? 0,
-                TotalEpisodes = dto.TVShowTotalEpisodes ?? 0,
-                Genres = dto.TVShowGenres,
-                EndDate = dto.TVShowEndDate ?? null,
-            };
-        }
-        private Music CreateMusic(UniversalContentDto dto)
-        {
-            if (!ContentValidator(dto))
-                throw new Exception("Title, descriprtion and release date must be filled");
-            if(string.IsNullOrEmpty(dto.MusicArtist))
-                throw new Exception("Music artist field must be filled");
-            if(dto.MusicDurationInSeconds == null || dto.MusicDurationInSeconds <= 0)
-                throw new Exception("Music duration in seconds field must be filled and greater than 0");
-            if(string.IsNullOrEmpty(dto.MusicLanquage))
-                throw new Exception("Music language field must be filled");
-            if(dto.MusciGenres.Count < 1)
-                throw new Exception("Music genres field must be filled with at least one genre");
-            return new Music
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                ReleaseYear = dto.ReleaseYear,
-                ReleaseDate = dto.ReleaseDate,
-                ImageUrl = dto.ImageUrl,
-                Artist = dto.MusicArtist!,
-                Album = dto.MusicAlbum ?? "Single",
-                DurationInSeconds = dto.MusicDurationInSeconds ?? 0,
-                Label = dto.MusicLabel ?? "No label",
-                Lanquage = dto.MusicLanquage,
-                Genres = dto.MusciGenres,
-            };
-        }
-        private async Task<Episode> CreateEpisode(UniversalContentDto dto)
-        {
-            if(!ContentValidator(dto))
-                throw new Exception("Title, descriprtion and release date must be filled");
-            if(dto.TVShowId == null || dto.TVShowId <= 0)
-                throw new Exception("TV show id field must be filled and greater than 0");
-            if(dto.EpisodeSeasonNumber == null || dto.EpisodeSeasonNumber <= 0)
-                throw new Exception("Episode season number field must be filled and greater than 0");
-            if(dto.EpisodeNumber == null || dto.EpisodeNumber <= 0)
-                throw new Exception("Episode number field must be filled and greater than 0");
-            if(dto.EpisodesTotalNumber == null || dto.EpisodesTotalNumber <= 0)
-                throw new Exception("Episode total number field must be filled and greater than 0");
-            if(dto.EpisodeRuntimeInMinutes == null || dto.EpisodeRuntimeInMinutes <= 0)
-                throw new Exception("Episode runtime in minutes field must be filled and greater than 0");
-            var episode = new Episode
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                ReleaseYear = dto.ReleaseYear,
-                ReleaseDate = dto.ReleaseDate,
-                ImageUrl = dto.ImageUrl,
-                TVShowId = dto.TVShowId.Value,
-                SeasonNumber = dto.EpisodeSeasonNumber ?? 0,
-                EpisodeNumber = dto.EpisodeNumber ?? 0,
-                TotalNumber = dto.EpisodesTotalNumber ?? 0,
-                RuntimeInMinutes = dto.EpisodeRuntimeInMinutes ?? 0,
-            };
-            var TVShow = await contentRepository.GetContentByIdAsync<TVShow>(dto.TVShowId!.Value);
-            if(TVShow == null)
-                throw new Exception("TV show with the given id does not exist");
-            return episode;
-        }   
-        private Game CreateGame(UniversalContentDto dto)
-        {
-            if(!ContentValidator(dto))
-                throw new Exception("Title, descriprtion and release date must be filled");
-            if(string.IsNullOrEmpty(dto.GameDeveloper))
-                throw new Exception("Game developer field must be filled");
-            if(string.IsNullOrEmpty(dto.GamePublisher))
-                throw new Exception("Game publisher field must be filled");
-            if(dto.GamePlatforms.Count < 1)
-                throw new Exception("Game platforms field must be filled with at least one platform");
-            if(dto.GameGenres.Count < 1)
-                throw new Exception("Game genres field must be filled with at least one genre");
-            return new Game
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                ReleaseYear = dto.ReleaseYear,
-                ReleaseDate = dto.ReleaseDate,
-                ImageUrl = dto.ImageUrl,
-                Developer = dto.GameDeveloper!,
-                Publisher = dto.GamePublisher!,
-                Platforms = dto.GamePlatforms,
-                Genres = dto.GameGenres,
-            };
-        }
-        private Book CreateBook(UniversalContentDto dto)
-        {
-            if(!ContentValidator(dto))
-                throw new Exception("Title, descriprtion and release date must be filled");
-            if(string.IsNullOrEmpty(dto.BookAuthor))
-                throw new Exception("Book author field must be filled");
-            if(string.IsNullOrEmpty(dto.BookOriginalLanguage))
-                throw new Exception("Book original language field must be filled");
-            if(dto.BookPages <= 0)
-                throw new Exception("Book pages field must be greater than 0");
-            if(dto.BookGenres.Count < 1)
-                throw new Exception("Book genres field must be filled with at least one genre");
-            return new Book
-            {
-                Title = dto.Title,
-                Description = dto.Description,
-                ReleaseYear = dto.ReleaseYear,
-                ReleaseDate = dto.ReleaseDate,
-                ImageUrl = dto.ImageUrl,
-                Author = dto.BookAuthor!,
-                Publisher = dto.BookPublisher ?? "No publisher",
-                OriginalLanguage = dto.BookOriginalLanguage,
-                Pages = dto.BookPages,
-                Genres = dto.BookGenres,
-            };
         }
         public async Task<ContentDetailsDto> UpdateContentAsync(int contentId, UpdateContentDto dto)
         {
@@ -438,6 +217,158 @@ namespace ContentPlatform.Services.Implementations
                 result.Add(mapper.Map<ContentSmallInfo>(content));
             }
             return result;
+        }
+
+        public async Task<Film> CreateFilmAsync(FilmCreateDto filmCreateDto)
+        {
+            BaseValidation(filmCreateDto);
+            if(string.IsNullOrEmpty(filmCreateDto.FilmDirector))
+                throw new Exception("Film director field must be filled");
+            if(filmCreateDto.FilmGenres == null || filmCreateDto.FilmGenres.Count < 1)
+                throw new Exception("Film genres field must be filled with at least one genre");
+            var film = new Film
+            {
+                Title = filmCreateDto.Title,
+                Description = filmCreateDto.Description,
+                ReleaseYear = filmCreateDto.ReleaseYear,
+                ReleaseDate = filmCreateDto.ReleaseDate,
+                ImageUrl = filmCreateDto.ImageUrl,
+                Director = filmCreateDto.FilmDirector!,
+                Writers = filmCreateDto.FilmWriters!,
+                MainCast = filmCreateDto.FilmMainCast!,
+                Budget = filmCreateDto.FilmBudget ?? 0,
+                BoxOffice = filmCreateDto.FilmBoxOffice ?? 0,
+                RuntimeInMinutes = filmCreateDto.FilmRuntimeInMinutes ?? 0,
+                CountryOfOrigin = filmCreateDto.FilmCountryOfOrigin,
+                Awards = filmCreateDto.FilmAwards,
+                Genres = filmCreateDto.FilmGenres,
+            };
+            await contentRepository.CreateContentAsync(film);
+            return film;
+        }
+
+        public async Task<TVShow> CreateTVShowAsync(TVShowCreateDto tvShowCreateDto)
+        {
+            BaseValidation(tvShowCreateDto);
+            var tvShow = new TVShow
+            {
+                Title = tvShowCreateDto.Title,
+                Description = tvShowCreateDto.Description,
+                ReleaseYear = tvShowCreateDto.ReleaseYear,
+                ReleaseDate = tvShowCreateDto.ReleaseDate,
+                ImageUrl = tvShowCreateDto.ImageUrl,
+                Director = tvShowCreateDto.TVShowDirector!,
+                Creators = tvShowCreateDto.TVShowCreators!,
+                MainCast = tvShowCreateDto.TVShowMainCast!,
+                Networks = tvShowCreateDto.TVShowNetworks!,
+                TotalSeasons = tvShowCreateDto.TVShowTotalSeasons ?? 0,
+                TotalEpisodes = tvShowCreateDto.TVShowTotalEpisodes ?? 0,
+                Genres = tvShowCreateDto.TVShowGenres ?? new(),
+                EndDate = tvShowCreateDto.TVShowEndDate ?? null,
+            };
+            await contentRepository.CreateContentAsync(tvShow);
+            return tvShow;
+        }
+
+        public async Task<Episode> CreateEpisodeAsync(EpisodeCreateDto episodeCreateDto, string? externallId = null, string? externalShowId = null)
+        {
+            BaseValidation(episodeCreateDto);
+            int actualShowId;
+            if (episodeCreateDto.EpisodeTVShowId.HasValue)
+            {
+                actualShowId = episodeCreateDto.EpisodeTVShowId.Value;
+            }
+            else if (string.IsNullOrEmpty(externalShowId))
+            {
+                var show = await contentRepository.GetIdByExternalId(externalShowId);
+                if (show == null)
+                    throw new Exception($"TV Show with externalId {externalShowId} is not found");
+                actualShowId = show.Id;
+            }
+            else
+                throw new Exception("TV Show reference is missing (both internal Id and external Id are null)");
+            var episode = new Episode
+            {
+                Title = episodeCreateDto.Title,
+                Description = episodeCreateDto.Description,
+                ReleaseYear = episodeCreateDto.ReleaseYear,
+                ReleaseDate = episodeCreateDto.ReleaseDate,
+                ImageUrl = episodeCreateDto.ImageUrl,
+                TVShowId = actualShowId,
+                SeasonNumber = episodeCreateDto.EpisodeSeasonNumber ?? 0,
+                EpisodeNumber = episodeCreateDto.EpisodeNumber ?? 0,
+                TotalNumber = episodeCreateDto.EpisodesTotalNumber ?? 0,
+                RuntimeInMinutes = episodeCreateDto.EpisodeRuntimeInMinutes ?? 0,
+                ExternalId = externallId,
+            };
+            await contentRepository.CreateContentAsync(episode);
+            return episode;
+        }
+
+        public async Task<Book> CreateBookAsync(BookCreateDto bookCreateDto)
+        {
+            BaseValidation(bookCreateDto);
+            var book = new Book
+            {
+                Title = bookCreateDto.Title,
+                Description = bookCreateDto.Description,
+                ReleaseYear = bookCreateDto.ReleaseYear,
+                ReleaseDate = bookCreateDto.ReleaseDate,
+                ImageUrl = bookCreateDto.ImageUrl,
+                Author = bookCreateDto.BookAuthor!,
+                Publisher = bookCreateDto.BookPublisher ?? "No publisher",
+                OriginalLanguage = bookCreateDto.BookOriginalLanguage,
+                Pages = bookCreateDto.BookPages,
+                Genres = bookCreateDto.BookGenres,
+            };
+            await contentRepository.CreateContentAsync(book);
+            return book;
+        }
+
+        public async Task<Music> CreateMusicAsync(MusicCreateDto musicCreateDto)
+        {
+            BaseValidation(musicCreateDto);
+            var music = new Music
+            {
+                Title = musicCreateDto.Title,
+                Description = musicCreateDto.Description,
+                ReleaseYear = musicCreateDto.ReleaseYear,
+                ReleaseDate = musicCreateDto.ReleaseDate,
+                ImageUrl = musicCreateDto.ImageUrl,
+                Artist = musicCreateDto.MusicArtist!,
+                Album = musicCreateDto.MusicAlbum ?? "Single",
+                DurationInSeconds = musicCreateDto.MusicDurationInSeconds ?? 0,
+                Label = musicCreateDto.MusicLabel ?? "No label",
+                Lanquage = musicCreateDto.MusicLanquage,
+                Genres = musicCreateDto.MusciGenres,
+            };
+            await contentRepository.CreateContentAsync(music);
+            return music;
+        }
+
+        public async Task<Game> CreateGameDto(GameCreateDto gameCreateDto)
+        {
+            BaseValidation(gameCreateDto);
+            var game = new Game
+            {
+                Title = gameCreateDto.Title,
+                Description = gameCreateDto.Description,
+                ReleaseYear = gameCreateDto.ReleaseYear,
+                ReleaseDate = gameCreateDto.ReleaseDate,
+                ImageUrl = gameCreateDto.ImageUrl,
+                Developer = gameCreateDto.GameDeveloper!,
+                Publisher = gameCreateDto.GamePublisher!,
+                Platforms = gameCreateDto.GamePlatforms,
+                Genres = gameCreateDto.GameGenres,
+            };
+            await contentRepository.CreateContentAsync(game);
+            return game;
+        }
+        private void BaseValidation(ContentCreateDto contentCreateDto)
+        {
+            if (string.IsNullOrEmpty(contentCreateDto.Title) ||
+                string.IsNullOrEmpty(contentCreateDto.Description))
+                throw new Exception("Title and description are required");
         }
     }
 }

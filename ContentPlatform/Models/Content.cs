@@ -12,5 +12,6 @@
         public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public List<Review> Reviews { get; set; } = new List<Review>();
+        public string? ExternalId { get; set; }
     }
 }

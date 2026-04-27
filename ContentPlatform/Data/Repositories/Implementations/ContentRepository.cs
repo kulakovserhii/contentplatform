@@ -207,5 +207,11 @@ namespace ContentPlatform.Data.Repositories.Implementations
             }
             await appDbContext.SaveChangesAsync();
         }
+
+        public async Task<TVShow>? GetIdByExternalId(string externalId)
+        {
+            var tvshow = await appDbContext.TVShows.FirstOrDefaultAsync(ts => ts.ExternalId == externalId);
+            return tvshow;
+        }
     }
 }

@@ -13,17 +13,62 @@ namespace ContentPlatform.Controllers
     [ApiController]
     public class ContentController(IContentService contentService) : ControllerBase
     {
-        [HttpPost("create-content")]
+        [HttpPost("create-film")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateContent([FromForm] UniversalContentDto dto)
+        public async Task<IActionResult> CreateFilm([FromForm] FilmCreateDto dto)
         {
-            var creation = await contentService.CreateContentAsync(dto);
+            var creation = await contentService.CreateFilmAsync(dto);
             if (creation == null)
-                return BadRequest(new { message = "Content creation failed" });
+                return BadRequest(new { message = "Film creation failed" });
             return Ok(creation);
         }
-        [HttpGet("get-content-by-id")]
-        public async Task<IActionResult> GetContent([FromQuery] int contentId)
+        [HttpPost("create-tvshow")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateTVShow([FromForm] TVShowCreateDto dto)
+        {
+            var creation = await contentService.CreateTVShowAsync(dto);
+            if (creation == null)
+                return BadRequest(new { message = "TVShow creation failed" });
+            return Ok(creation);
+        }
+        [HttpPost("create-music")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateMusic([FromForm] MusicCreateDto dto)
+        {
+            var creation = await contentService.CreateMusicAsync(dto);
+            if (creation == null)
+                return BadRequest(new { message = "Music creation failed" });
+            return Ok(creation);
+        }
+        [HttpPost("create-game")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateContent([FromForm] GameCreateDto dto)
+        {
+            var creation = await contentService.CreateGameDto(dto);
+            if (creation == null)
+                return BadRequest(new { message = "Game creation failed" });
+            return Ok(creation);
+        }
+        [HttpPost("create-episode")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateContent([FromForm] EpisodeCreateDto dto)
+        {
+            var creation = await contentService.CreateEpisodeAsync(dto);
+            if (creation == null)
+                return BadRequest(new { message = "Episode creation failed" });
+            return Ok(creation);
+        }
+        [HttpPost("create-book")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateContent([FromForm] BookCreateDto dto)
+        {
+            var creation = await contentService.CreateBookAsync(dto);
+            if (creation == null)
+                return BadRequest(new { message = "Book creation failed" });
+            return Ok(creation);
+        }
+        [HttpGet("{contentId}")]
+        public async Task<IActionResult> GetContent(int contentId)
         {
             var userIdExists = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int? userId = userIdExists != null ? int.Parse(userIdExists) : null;

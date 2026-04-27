@@ -13,5 +13,6 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task<Content?> GetContentWithReviewAsync(int contentId);
         Task<List<Content>> SearchContentAsync(ContentSearch searchParams);
         Task UpdateContentRating(int contentId);
+        Task<TVShow>? GetIdByExternalId(string externalId);
     }
 }
