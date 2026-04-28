@@ -16,5 +16,6 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task<TVShow>? GetIdByExternalId(string externalId);
         Task<bool> ExistsByExternalId(string externalId);
         Task<int> GetCountAsync<T>() where T: Content;
+        Task<TVShow?> GetLastCreatedTVShowAsync();
     }
 }

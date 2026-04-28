@@ -112,7 +112,7 @@ namespace ContentPlatform.ExternalApi
                                 }
                                 catch (Exception ex)
                                 {
-                                    logger.LogError("Failed book uploading");
+                                    logger.LogError("Failed book uploading", ex.Message);
                                 }
                             }
                         }
@@ -120,31 +120,35 @@ namespace ContentPlatform.ExternalApi
                         {
                             logger.LogInformation("Daily update: limit 150 filmes was reached");
                         }
-                        var popularShows = await tvShowService.GetPopularTvShowsAsync(5);
-                        foreach (var showDto in popularShows)
+                        var lastShow = await contentRepository.GetLastCreatedTVShowAsync();
+                        bool isTimeforTvShows = lastShow == null || lastShow.CreatedAt <= DateTime.UtcNow.AddDays(-7);
+                        if (isTimeforTvShows)
                         {
-                            if (!await contentRepository.ExistsByExternalId(showDto.ExternalId!))
+                            var popularShows = await tvShowService.GetPopularTvShowsAsync(5);
+                            foreach (var showDto in popularShows)
                             {
-                                try
+                                if (!await contentRepository.ExistsByExternalId(showDto.ExternalId!))
                                 {
-                                    var createdShow = await contentService.CreateTVShowAsync(showDto);
-                                    var rawId = showDto.ExternalId!.Replace("tmdb-tv-", "");
-                                    var episodes = await tvShowService.GetEpisodesForSeasonsAsync(int.Parse(rawId), 1);
-                                    foreach (var episodeDto in episodes)
+                                    try
                                     {
-                                        episodeDto.EpisodeTVShowId = createdShow.Id;
-                                        await contentService.CreateEpisodeAsync(episodeDto);
+                                        var createdShow = await contentService.CreateTVShowAsync(showDto);
+                                        var rawId = showDto.ExternalId!.Replace("tmdb-tv-", "");
+                                        var episodes = await tvShowService.GetEpisodesForSeasonsAsync(int.Parse(rawId), 1);
+                                        foreach (var episodeDto in episodes)
+                                        {
+                                            episodeDto.EpisodeTVShowId = createdShow.Id;
+                                            await contentService.CreateEpisodeAsync(episodeDto);
+                                        }
+                                        logger.LogInformation("Tv Show: 'Title' with 'Count' episodes added");
                                     }
-                                    logger.LogInformation("Tv Show: 'Title' with 'Count' episodes added");
-                                }
-                                catch (Exception ex)
-                                {
-                                    logger.LogError(ex, "Failed to upload TV show with external ID {ExternalId}", showDto.ExternalId);
+                                    catch (Exception ex)
+                                    {
+                                        logger.LogError(ex, "Failed to upload TV show with external ID {ExternalId}", showDto.ExternalId);
+                                    }
                                 }
                             }
-                        }
-                       
-                    }
+                        }           
+                   }
                     await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
                 }
                 catch(Exception ex)

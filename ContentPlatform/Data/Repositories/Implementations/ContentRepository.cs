@@ -225,5 +225,11 @@ namespace ContentPlatform.Data.Repositories.Implementations
             var exists = await appDbContext.Contents.AnyAsync(c => c.ExternalId == externalId);
             return exists;
         }
+
+        public async Task<TVShow?> GetLastCreatedTVShowAsync()
+        {
+            return await appDbContext.TVShows.OrderByDescending(ts => ts.CreatedAt)
+                .FirstOrDefaultAsync();      
+        }
     }
 }
