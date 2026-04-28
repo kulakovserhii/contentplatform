@@ -35,6 +35,9 @@ namespace ContentPlatform.Data
             modelBuilder.ApplyConfiguration(new TVShowConfiguration());
             modelBuilder.ApplyConfiguration(new EpisodeConfiguration());
             modelBuilder.ApplyConfiguration(new RateReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new AchievementConfiguration());
+            modelBuilder.ApplyConfiguration(new UserAchievementConfiguration());
+            modelBuilder.ApplyConfiguration(new UserStataConfiguration());
             modelBuilder.Entity<Film>().ToTable("Films");
             modelBuilder.Entity<TVShow>().ToTable("TVShows");
             modelBuilder.Entity<Episode>().ToTable("Episodes");

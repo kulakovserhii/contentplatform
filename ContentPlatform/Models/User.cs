@@ -12,5 +12,7 @@
         public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
         public List<RateReview> RateReviews { get; set; } = new List<RateReview>();
+        public List<UserAchevement> UserAchevements { get; set; } = new List<UserAchevement>();
+        public UserStats UserStats { get; set; }
     }
 }
