@@ -182,6 +182,7 @@ namespace ContentPlatform.Services.Implementations
                 OriginalLanguage = bookCreateDto.BookOriginalLanguage,
                 Pages = bookCreateDto.BookPages,
                 Genres = bookCreateDto.BookGenres,
+                ExternalId = bookCreateDto.ExternalId,
             };
             await contentRepository.CreateContentAsync(book);
             return book;
@@ -209,7 +210,7 @@ namespace ContentPlatform.Services.Implementations
             return music;
         }
 
-        public async Task<Game> CreateGameDto(GameCreateDto gameCreateDto)
+        public async Task<Game> CreateGameAsync(GameCreateDto gameCreateDto)
         {
             BaseValidation(gameCreateDto);
             var game = new Game
@@ -223,6 +224,7 @@ namespace ContentPlatform.Services.Implementations
                 Publisher = gameCreateDto.GamePublisher!,
                 Platforms = gameCreateDto.GamePlatforms,
                 Genres = gameCreateDto.GameGenres,
+                ExternalId = gameCreateDto.ExternalId,
             };
             await contentRepository.CreateContentAsync(game);
             return game;

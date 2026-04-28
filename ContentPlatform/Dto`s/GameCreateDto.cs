@@ -8,5 +8,6 @@ namespace ContentPlatform.Dto_s
         public string? GamePublisher { get; set; }
         public List<Platform>? GamePlatforms { get; set; }
         public List<GameGenre>? GameGenres { get; set; } 
+        public string? ExternalId { get; set; }
     }
 }

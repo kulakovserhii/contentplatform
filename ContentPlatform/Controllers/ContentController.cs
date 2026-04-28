@@ -44,7 +44,7 @@ namespace ContentPlatform.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateContent([FromForm] GameCreateDto dto)
         {
-            var creation = await contentService.CreateGameDto(dto);
+            var creation = await contentService.CreateGameAsync(dto);
             if (creation == null)
                 return BadRequest(new { message = "Game creation failed" });
             return Ok(creation);

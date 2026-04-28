@@ -64,7 +64,13 @@ builder.Services.AddHttpClient<ILastFmService, LastFmService>(client =>
     client.BaseAddress = new Uri("https://ws.audioscrobbler.com/2.0/");
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
+builder.Services.AddHttpClient<IOpenLibraryService, OpenLibraryService>(client =>
+{
+    client.BaseAddress = new Uri("https://openlibrary.org/");
+    client.DefaultRequestHeaders.Add("User-Agent", "NewProject");
+});
 builder.Services.AddScoped<ILastFmService, LastFmService>();
+builder.Services.AddHttpClient<IIgdbService, IgdbService>();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MapperProfile>();
 });

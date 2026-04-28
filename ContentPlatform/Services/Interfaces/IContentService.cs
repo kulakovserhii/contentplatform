@@ -11,7 +11,7 @@ namespace ContentPlatform.Services.Interfaces
         Task<Episode> CreateEpisodeAsync(EpisodeCreateDto episodeCreateDto, string? externallId = null, string? externalShowId = null);
         Task<Book> CreateBookAsync(BookCreateDto bookCreateDto);
         Task<Music> CreateMusicAsync(MusicCreateDto musicCreateDto);
-        Task<Game> CreateGameDto(GameCreateDto gameCreateDto);
+        Task<Game> CreateGameAsync(GameCreateDto gameCreateDto);
         Task<ContentDetailsDto> GetContentByIdAsync(int contentId, int? userId);
         Task<List<ContentDetailsDto>> GetAllContentByTypeAsync(ContentType contentType);
         Task<List<ContentDetailsDto>> GetAllContentWithoutReviewsAsync();

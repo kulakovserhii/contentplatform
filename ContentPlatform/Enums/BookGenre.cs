@@ -16,5 +16,8 @@ namespace ContentPlatform.Enums
         Thriller,
         Horror,
         Adventure,
+        [Display(Name = "Global CLassic")]
+        GloBalClassic,
+        Other,
     }
 }
