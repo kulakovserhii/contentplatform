@@ -120,12 +120,13 @@ namespace ContentPlatform.Services.Implementations
                 ImageUrl = tvShowCreateDto.ImageUrl,
                 Director = tvShowCreateDto.TVShowDirector!,
                 Creators = tvShowCreateDto.TVShowCreators!,
-                MainCast = tvShowCreateDto.TVShowMainCast!,
+                MainCast = tvShowCreateDto.TVShowMainCast!, 
                 Networks = tvShowCreateDto.TVShowNetworks!,
                 TotalSeasons = tvShowCreateDto.TVShowTotalSeasons ?? 0,
                 TotalEpisodes = tvShowCreateDto.TVShowTotalEpisodes ?? 0,
                 Genres = tvShowCreateDto.TVShowGenres ?? new(),
                 EndDate = tvShowCreateDto.TVShowEndDate ?? null,
+                ExternalId = tvShowCreateDto.ExternalId,
 
             };
             await contentRepository.CreateContentAsync(tvShow);
@@ -136,15 +137,16 @@ namespace ContentPlatform.Services.Implementations
         {
             BaseValidation(episodeCreateDto);
             int actualShowId;
-            if (episodeCreateDto.EpisodeTVShowId.HasValue)
+            
+            if (episodeCreateDto.EpisodeTVShowId.HasValue && episodeCreateDto.EpisodeTVShowId.Value > 0)
             {
                 actualShowId = episodeCreateDto.EpisodeTVShowId.Value;
             }
-            else if (string.IsNullOrEmpty(externalShowId))
+            else if (!string.IsNullOrEmpty(externalShowId))
             {
                 var show = await contentRepository.GetIdByExternalId(externalShowId);
                 if (show == null)
-                    throw new Exception($"TV Show with externalId {externalShowId} is not found");
+                    throw new KeyNotFoundException($"TV Show with externalId {externalShowId} not found");
                 actualShowId = show.Id;
             }
             else
@@ -161,7 +163,7 @@ namespace ContentPlatform.Services.Implementations
                 EpisodeNumber = episodeCreateDto.EpisodeNumber ?? 0,
                 TotalNumber = episodeCreateDto.EpisodesTotalNumber ?? 0,
                 RuntimeInMinutes = episodeCreateDto.EpisodeRuntimeInMinutes ?? 0,
-                ExternalId = externallId,
+                ExternalId = externallId ?? episodeCreateDto.ExternalId,
             };
             await contentRepository.CreateContentAsync(episode);
             return episode;

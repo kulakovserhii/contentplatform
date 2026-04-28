@@ -6,6 +6,6 @@ namespace ContentPlatform.Services.Interfaces
     public interface ITvShowService
     {
         Task<List<TVShowCreateDto>> GetPopularTvShowsAsync(int count);
-        Task<List<EpisodeCreateDto>> GetEpisodesForSeasonsAsync(int tvShowId);
+        Task<List<EpisodeCreateDto>> GetEpisodesForSeasonsAsync(int tvShowId, int seasonNumber);
     }
 }

@@ -18,5 +18,7 @@ namespace ContentPlatform.ExternalApi.TmdbModels
         public int? Runtime { get; set;}
         [JsonPropertyName("still_path")]
         public string? StillPath { get; set; }
+        [JsonPropertyName("id")]
+        public int? Id { get; set; }
     }
 }

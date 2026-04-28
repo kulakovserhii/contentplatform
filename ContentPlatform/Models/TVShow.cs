@@ -4,9 +4,9 @@ namespace ContentPlatform.Models
 {
     public class TVShow : Content
     {
-        public required string Creators { get; set; }
-        public required string Director { get; set; }
-        public required string MainCast { get; set; }
+        public string Creators { get; set; }
+        public string Director { get; set; }
+        public string MainCast { get; set; }
         public int TotalSeasons { get; set; }
         public int TotalEpisodes { get; set; }
         public string? Networks { get; set; }

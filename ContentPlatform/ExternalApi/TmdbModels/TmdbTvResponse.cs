@@ -26,5 +26,7 @@ namespace ContentPlatform.ExternalApi.TmdbModels
         public List<TmdbCreator>? CreatedBy { get; set; }
         [JsonPropertyName("networks")] 
         public List<TmdbNetwork>? Networks { get; set; }
+        [JsonPropertyName("credits")]
+        public TmdbCredits? Credits { get; set; }
     }
 }

@@ -12,5 +12,6 @@ namespace ContentPlatform.Dto_s
         public string? TVShowNetworks { get; set; }
         public DateTime? TVShowEndDate { get; set; }
         public List<FilmGenre>? TVShowGenres { get; set; }
+        public string? ExternalId { get; set; }
     }
 }

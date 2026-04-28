@@ -24,6 +24,7 @@ namespace ContentPlatform.ExternalApi
                         var lastFmService = scope.ServiceProvider.GetRequiredService<ILastFmService>();
                         var igdbService = scope.ServiceProvider.GetRequiredService<IIgdbService>();
                         var openLibraryService = scope.ServiceProvider.GetRequiredService<IOpenLibraryService>();
+                        var tvShowService = scope.ServiceProvider.GetRequiredService<ITvShowService>();
                         int currentFilmCount = await contentRepository.GetCountAsync<Film>();
                         if (currentFilmCount < limit)
                         {
@@ -119,6 +120,30 @@ namespace ContentPlatform.ExternalApi
                         {
                             logger.LogInformation("Daily update: limit 150 filmes was reached");
                         }
+                        var popularShows = await tvShowService.GetPopularTvShowsAsync(5);
+                        foreach (var showDto in popularShows)
+                        {
+                            if (!await contentRepository.ExistsByExternalId(showDto.ExternalId!))
+                            {
+                                try
+                                {
+                                    var createdShow = await contentService.CreateTVShowAsync(showDto);
+                                    var rawId = showDto.ExternalId!.Replace("tmdb-tv-", "");
+                                    var episodes = await tvShowService.GetEpisodesForSeasonsAsync(int.Parse(rawId), 1);
+                                    foreach (var episodeDto in episodes)
+                                    {
+                                        episodeDto.EpisodeTVShowId = createdShow.Id;
+                                        await contentService.CreateEpisodeAsync(episodeDto);
+                                    }
+                                    logger.LogInformation("Tv Show: 'Title' with 'Count' episodes added");
+                                }
+                                catch (Exception ex)
+                                {
+                                    logger.LogError(ex, "Failed to upload TV show with external ID {ExternalId}", showDto.ExternalId);
+                                }
+                            }
+                        }
+                       
                     }
                     await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
                 }

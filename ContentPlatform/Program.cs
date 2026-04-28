@@ -69,6 +69,13 @@ builder.Services.AddHttpClient<IOpenLibraryService, OpenLibraryService>(client =
     client.BaseAddress = new Uri("https://openlibrary.org/");
     client.DefaultRequestHeaders.Add("User-Agent", "NewProject");
 });
+
+builder.Services.AddHttpClient<ITvShowService, TVShowService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", builder.Configuration["TMDB:ApiKey"]);
+});
 builder.Services.AddScoped<ILastFmService, LastFmService>();
 builder.Services.AddHttpClient<IIgdbService, IgdbService>();
 builder.Services.AddAutoMapper(cfg => {
