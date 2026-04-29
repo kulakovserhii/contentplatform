@@ -18,12 +18,28 @@ namespace ContentPlatform.Data.Repositories.Implementations
             return achievemts;
         }
 
+        public async Task<List<Achievement>> GetLockedAchievementsAsync(int userId)
+        {
+            var unlockedAchievementsIds = await appDbContext.UserAchevements
+                .Where(ua => ua.Id == userId).Select(ua => ua.Id).ToListAsync();
+            var unlockedAchievements = await appDbContext.Achievements
+                .Where(a => !unlockedAchievementsIds.Contains(a.Id)).ToListAsync();
+            return unlockedAchievements;
+        }
+
         public async Task<List<int>> GetUnlockedAchievementsIdsAsync(int userId)
         {
             var userAcievements = await appDbContext.UserAchevements
                 .Where(ua => ua.UserId == userId)
                 .Select(ua => ua.AchievementId).ToListAsync();
             return userAcievements;
+        }
+
+        public async Task<bool> HasAchievemntAsync(int userId, int achievementId)
+        {
+            var achievementExists = await appDbContext.UserAchevements
+                .AnyAsync(ua => ua.AchievementId == achievementId && ua.UserId == userId);
+            return achievementExists;
         }
     }
 }

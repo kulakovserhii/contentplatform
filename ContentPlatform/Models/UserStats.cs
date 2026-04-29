@@ -12,5 +12,7 @@
         public int TvShowReviewsCount { get; set; }
         public int LikeReviewsCount { get; set; }
         public int LikeReviewsRetrievedCount { get; set; }
+        public int PerfectiRatingCount { get; set; }
+        public int LowRatingsCount { get; set; }
     }
 }
