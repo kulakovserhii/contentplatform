@@ -24,6 +24,9 @@ namespace ContentPlatform.Data
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RateReview> RateReviews { get; set; }
+        public DbSet<Achievement> Achievements { get; set; }
+        public DbSet<UserAchevement> UserAchevements { get; set; }
+        public DbSet<UserStats> UserStats { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ContentConfiguration());
