@@ -78,6 +78,9 @@ builder.Services.AddHttpClient<ITvShowService, TVShowService>(client =>
 });
 builder.Services.AddScoped<ILastFmService, LastFmService>();
 builder.Services.AddHttpClient<IIgdbService, IgdbService>();
+builder.Services.AddScoped<IUserStatsRepository, UserStatsRepository>();
+builder.Services.AddScoped<IAchievementRepository, AchievementRepository>();
+builder.Services.AddScoped<IGamificationService, GamificationService>();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<MapperProfile>();
 });

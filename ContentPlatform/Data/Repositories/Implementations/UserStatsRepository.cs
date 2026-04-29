@@ -14,7 +14,7 @@ namespace ContentPlatform.Data.Repositories.Implementations
 
         public async Task<UserStats> GetUserStatsAsync(int userId)
         {
-            var userstats = await appDbContext.UserStats.FirstOrDefaultAsync(us => us.Id == userId);
+            var userstats = await appDbContext.UserStats.FirstOrDefaultAsync(us => us.UserId == userId);
             return userstats;
         }
 

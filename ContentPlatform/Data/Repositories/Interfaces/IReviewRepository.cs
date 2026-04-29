@@ -17,6 +17,7 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task RemoveRateReview(RateReview rateReview);
         Task UpdateRateReview(RateReview rateReview);
         Task<Dictionary<int, Evaluate>> GetUserVotesForReviews(int userId, List<int> reviewIds);
-        
+        Task<int> GetLikesCount(int reviewId);
+ 
     }
 }

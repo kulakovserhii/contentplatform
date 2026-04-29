@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace ContentPlatform.Services.Implementations
 {
-    public class AuthService(IAuthRepository authRepository, IConfiguration configuration) : IAuthService
+    public class AuthService(IAuthRepository authRepository, IGamificationService gamificationService, IConfiguration configuration) : IAuthService
     {
         public async Task<TokensDto?> LoginAsync(LoginDto loginDto)
         {
@@ -56,6 +56,7 @@ namespace ContentPlatform.Services.Implementations
                 Age = registerDto.Age
             };
             await authRepository.CreateUserAsync(user);
+            await gamificationService.ProcessRegistrationAchievementAsync(user.Id);
             return "Account created";
         }
         public async Task<User?> GetOrCreateUserAsync(string email, string? name, string? lastname)

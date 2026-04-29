@@ -32,6 +32,14 @@ namespace ContentPlatform.Data.Repositories.Implementations
             };
         }
 
+        public async Task<int> GetLikesCount(int reviewId)
+        {
+            var likescount = await appDbContext.RateReviews
+                .Where(rr => rr.ReviewId == reviewId && rr.VoteType == Evaluate.Like)
+                .CountAsync();
+            return likescount;
+        }
+
         public async Task<RateReview> GetRateReview(int userId, int reviewId)
         {
             var rateReview = await appDbContext.RateReviews.Where(rr => rr.UserId == userId && rr.ReviewId == reviewId)

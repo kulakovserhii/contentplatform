@@ -8,7 +8,7 @@ using ContentPlatform.Services.Interfaces;
 namespace ContentPlatform.Services.Implementations
 {
     public class ReviewService(IReviewRepository reviewRepository, 
-        IContentRepository contentRepository, IMapper mapper) : IReviewService
+        IContentRepository contentRepository, IMapper mapper, IGamificationService gamificationService) : IReviewService
     {
         public async Task<string> EvaluateReviewAsync(int reviewId, int userId, Evaluate evaluate)
         {
@@ -25,17 +25,26 @@ namespace ContentPlatform.Services.Implementations
                     VoteType = evaluate
                 };
                 await reviewRepository.LeaveRateReview(rr);
+                if (evaluate == Evaluate.Like)
+                    await gamificationService.ProcessLikeAchievementsAsync(userId, review.UserId, reviewId, true);
                 return "Review was rated";
             }
             if (evaluate == ratereview.VoteType)
             {
                 await reviewRepository.RemoveRateReview(ratereview);
+                if (evaluate == Evaluate.Like)
+                    await gamificationService.UndoLikeAchievementAsync(userId, review.UserId);
                 return "Review was deleted";
             }
             else 
             {
+                var oldType = ratereview.VoteType;
                 ratereview.VoteType = evaluate;
                 await reviewRepository.UpdateRateReview(ratereview);
+                if (evaluate == Evaluate.Like)
+                    await gamificationService.ProcessLikeAchievementsAsync(userId, review.UserId, reviewId, true);
+                else if (oldType == Evaluate.Like)
+                    await gamificationService.UndoLikeAchievementAsync(userId, review.UserId);
                 return "Review`s rate was changed";
             }
         }
@@ -94,6 +103,7 @@ namespace ContentPlatform.Services.Implementations
             };
             await reviewRepository.LeaveReview(review);
             await contentRepository.UpdateContentRating(contentId);
+            await gamificationService.ProcessReviewAchievementsAsync(userId, review, contentExists);
             return "Review has been created";
         }
     }
