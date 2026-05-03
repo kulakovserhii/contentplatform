@@ -22,9 +22,9 @@ namespace ContentPlatform.ExternalApi
                         var contentService = scope.ServiceProvider.GetRequiredService<IContentService>();
                         var contentRepository = scope.ServiceProvider.GetRequiredService<IContentRepository>();
                         var lastFmService = scope.ServiceProvider.GetRequiredService<ILastFmService>();
-                        var igdbService = scope.ServiceProvider.GetRequiredService<IIgdbService>();
                         var openLibraryService = scope.ServiceProvider.GetRequiredService<IOpenLibraryService>();
                         var tvShowService = scope.ServiceProvider.GetRequiredService<ITvShowService>();
+                        var rawgService = scope.ServiceProvider.GetRequiredService<IRawgService>();
                         int currentFilmCount = await contentRepository.GetCountAsync<Film>();
                         if (currentFilmCount < limit)
                         {
@@ -43,12 +43,12 @@ namespace ContentPlatform.ExternalApi
                             }
                         }
                         int currentMusicCount = await contentRepository.GetCountAsync<Music>();
-                        if(currentMusicCount < limit)
+                        if (currentMusicCount < limit)
                         {
                             int musicToAddCount = currentMusicCount < 75 ? (75 - currentMusicCount) : 1;
                             var musicCandidates = await lastFmService.GetPopularMusic(musicToAddCount);
                             int addedMusicInThisCycle = 0;
-                            foreach(var musicDto in musicCandidates)
+                            foreach (var musicDto in musicCandidates)
                             {
                                 if (addedMusicInThisCycle >= musicToAddCount)
                                     break;
@@ -61,36 +61,36 @@ namespace ContentPlatform.ExternalApi
                                         logger.LogInformation("Added music: {Artist} - {Title}");
                                     }
                                 }
-                                catch(Exception ex)
+                                catch (Exception ex)
                                 {
                                     logger.LogError("Failed to load track {Title}: {Message}");
                                 }
                             }
                         }
                         int currentGameCount = await contentRepository.GetCountAsync<Game>();
-                        //if(currentGameCount < limit)
-                        //{
-                        //    int gamesToAdd = currentGameCount < 75 ? (75 - currentGameCount) : 1;
-                        //    var gameCandidates = await igdbService.GetPopularGamesAsync(gamesToAdd + 5);
-                        //    int addedGames = 0;
-                        //    foreach(var gameDto in gameCandidates)
-                        //    {
-                        //        if (addedGames >= gamesToAdd)
-                        //            break;
-                        //        try
-                        //        {
-                        //            if(!await contentRepository.ExistsByExternalId(gameDto.ExternalId!))
-                        //            {
-                        //                await contentService.CreateGameAsync(gameDto);
-                        //                addedGames++;
-                        //            }
-                        //        }
-                        //        catch(Exception ex)
-                        //        {
-                        //            logger.LogError("Failed game uploading");
-                        //        }
-                        //    }
-                        //}
+                        if(currentGameCount < limit)
+                        {
+                            int gamesToAdd = currentGameCount < 75 ? (75 - currentGameCount) : 1;
+                            var gameCandidates = await rawgService.GetPopularGamesAsync(gamesToAdd);
+                            int addedGames = 0;
+                            foreach(var gameDto in gameCandidates)
+                            {
+                                if (addedGames >= gamesToAdd)
+                                    break;
+                                try
+                                {
+                                    if(!await contentRepository.ExistsByExternalId(gameDto.ExternalId!))
+                                    {
+                                        await contentService.CreateGameAsync(gameDto);
+                                        addedGames++;
+                                    }
+                                }
+                                catch(Exception ex)
+                                {
+                                    logger.LogError(ex.Message);
+                                }
+                            }
+                        }
                         int currentBooks = await contentRepository.GetCountAsync<Book>();
                         if (currentBooks < limit)
                         {
@@ -149,7 +149,7 @@ namespace ContentPlatform.ExternalApi
                             }
                         }           
                    }
-                    await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
+                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
                 }
                 catch(Exception ex)
                 {

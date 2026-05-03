@@ -2,7 +2,7 @@
 
 namespace ContentPlatform.Services.Interfaces
 {
-    public interface IIgdbService
+    public interface IRawgService
     {
         Task<List<GameCreateDto>> GetPopularGamesAsync(int count);
     }

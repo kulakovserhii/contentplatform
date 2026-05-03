@@ -77,7 +77,7 @@ builder.Services.AddHttpClient<ITvShowService, TVShowService>(client =>
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", builder.Configuration["TMDB:ApiKey"]);
 });
 builder.Services.AddScoped<ILastFmService, LastFmService>();
-builder.Services.AddHttpClient<IIgdbService, IgdbService>();
+builder.Services.AddHttpClient<IRawgService, RawgService>();
 builder.Services.AddScoped<IUserStatsRepository, UserStatsRepository>();
 builder.Services.AddScoped<IAchievementRepository, AchievementRepository>();
 builder.Services.AddScoped<IGamificationService, GamificationService>();
