@@ -13,5 +13,7 @@ namespace ContentPlatform.Data.Repositories.Interfaces
         Task<RefreshToken> UpdateRefreshTokenAsync(RefreshToken refreshToken);
         Task<bool> RemoveRefreshTokenAsync(RefreshToken refreshToken);
         Task<RefreshToken> GetUserRefreshTokenAsync(string token);
+        Task UpdateUserInfo(User user);
+        Task<List<Achievement>> GetUserAchievements(int userId);
     }
 }

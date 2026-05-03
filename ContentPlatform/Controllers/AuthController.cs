@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ContentPlatform.Controllers
 {
@@ -80,6 +81,26 @@ namespace ContentPlatform.Controllers
                 return BadRequest(new { message = "Invalid refresh token" });
             }
             return Ok(new { message = "Logout successfull" });
+        }
+        [HttpPut("/update-user-profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserProfile(UpdateUserDto updateUserDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await authService.UpdateUserProfile(int.Parse(userId!), updateUserDto);
+            if (result == false)
+                return BadRequest(new { message = "Smth got wrong" });
+            return Ok(new { message = "User data succesfully updated" });
+        }
+        [HttpGet("/get-user-achievements")]
+        [Authorize]
+        public async Task<IActionResult> GetUserAchievements()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await authService.GetUserAchievimentsAsync(int.Parse(userId!));
+            if (result == null)
+                return BadRequest(new { message = "You have no achievements yet" });
+            return Ok(result);
         }
         [HttpGet("/default-test")]
         [Authorize]

@@ -24,6 +24,7 @@ public class MapperProfile : Profile
         CreateMap<Review, MyReviewDto>()
             .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content));
         CreateMap<Content, MyReviewContentDto>();
+        CreateMap<Achievement, AchievementDto>();
     }
     private object? GetAdditionalDetails(Content src)
     {

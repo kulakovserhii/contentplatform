@@ -1,4 +1,5 @@
-﻿using ContentPlatform.Data.Repositories.Interfaces;
+﻿using AutoMapper;
+using ContentPlatform.Data.Repositories.Interfaces;
 using ContentPlatform.Dto_s;
 using ContentPlatform.Models;
 using ContentPlatform.Services.Interfaces;
@@ -12,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace ContentPlatform.Services.Implementations
 {
-    public class AuthService(IAuthRepository authRepository, IGamificationService gamificationService, IConfiguration configuration) : IAuthService
+    public class AuthService(IAuthRepository authRepository, IGamificationService gamificationService, IConfiguration configuration, IMapper mapper) : IAuthService
     {
         public async Task<TokensDto?> LoginAsync(LoginDto loginDto)
         {
@@ -165,6 +166,32 @@ namespace ContentPlatform.Services.Implementations
                 JwtToken = await CreateJwtToken(user),
                 RefreshToken = await SaveRefreshToken(user),
             };
+        }
+
+        public async Task<bool> UpdateUserProfile(int userId, UpdateUserDto updateUserDto)
+        {
+            var userExists = await authRepository.GetUserById(userId);
+            if (userExists == null)
+                return false;
+            if(!string.IsNullOrEmpty(updateUserDto.Name))
+                userExists.FirstName = updateUserDto.Name;
+            if(!string.IsNullOrEmpty(updateUserDto.LastName))
+                userExists.LastName = updateUserDto.LastName;
+            if(updateUserDto.Age.HasValue && updateUserDto.Age.Value > 0)
+                userExists.Age = updateUserDto.Age;
+            await authRepository.UpdateUserInfo(userExists);
+            return true;
+        }
+
+        public async Task<List<AchievementDto>> GetUserAchievimentsAsync(int userId)
+        {
+            var userAchievements = await authRepository.GetUserAchievements(userId);
+            var result = new List<AchievementDto>();
+            foreach(var ach in userAchievements)
+            {
+                result.Add(mapper.Map<AchievementDto>(ach));
+            }
+            return result;
         }
     }
 }

@@ -10,5 +10,7 @@ namespace ContentPlatform.Services.Interfaces
         Task<bool> LogoutAsync(string refreshToken);
         Task<User?> GetOrCreateUserAsync(string email, string? name, string? lastname);
         Task<TokensDto> GetTokensAsync(User user);
+        Task<bool>UpdateUserProfile(int userId, UpdateUserDto updateUserDto);
+        Task<List<AchievementDto>> GetUserAchievimentsAsync(int userId);
     }
 }

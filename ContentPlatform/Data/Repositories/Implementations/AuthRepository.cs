@@ -41,6 +41,14 @@ namespace ContentPlatform.Data.Repositories.Implementations
             return refreshTokens;
         }
 
+        public async Task<List<Achievement>> GetUserAchievements(int userId)
+        {
+            var userachievements = await appDbContext.UserAchevements
+                .Where(ua => ua.UserId == userId).Include(ua => ua.Achievement)
+                .Select(ua => ua.Achievement).ToListAsync();
+            return userachievements;
+        }
+
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await appDbContext.Users.Include(u => u.UserRoles)
@@ -81,6 +89,12 @@ namespace ContentPlatform.Data.Repositories.Implementations
             appDbContext.RefreshTokens.Update(refreshToken);
             await appDbContext.SaveChangesAsync();
             return refreshToken;
+        }
+
+        public async Task UpdateUserInfo(User user)
+        {
+            appDbContext.Users.Update(user);
+            await appDbContext.SaveChangesAsync();
         }
     }
 }
