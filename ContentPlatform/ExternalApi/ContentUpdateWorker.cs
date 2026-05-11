@@ -149,7 +149,7 @@ namespace ContentPlatform.ExternalApi
                             }
                         }           
                    }
-                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                    await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
                 }
                 catch(Exception ex)
                 {
